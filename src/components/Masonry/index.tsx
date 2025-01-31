@@ -8,7 +8,7 @@ import { MasonryItem } from "./MasonryItem";
 const StyledMasonryContainer = styled.div`
   .photos-container {
     display: flex;
-    gap: 5px;
+    gap: 16px;
     font-size: 0;
 
     & > div {

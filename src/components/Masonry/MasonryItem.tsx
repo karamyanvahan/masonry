@@ -4,25 +4,12 @@ import styled from "styled-components";
 
 const StyledMasonryGridItem = styled.div<{ isLoading: boolean }>`
   position: relative;
-  margin: 5px 0;
+  margin: 16px 0;
+  border-radius: 14px;
+  overflow: hidden;
 
   img {
     width: 100%;
-  }
-
-  .overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    opacity: 0;
-    transition: 0.1s;
-    background-color: #000000bb;
-
-    &:hover {
-      opacity: 1;
-    }
   }
 
   .placeholder {
@@ -51,7 +38,6 @@ export const MasonryItem: React.FC<{
 
   return (
     <StyledMasonryGridItem isLoading={isLoading}>
-      <div className="overlay"></div>
       <div
         className="placeholder"
         ref={placeholderEl}
