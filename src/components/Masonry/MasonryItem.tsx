@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import styled from "styled-components";
 
-const StyledMasonryGridItem = styled.div<{ isLoading: boolean }>`
+const StyledMasonryGridItem = styled.div<{ $isLoading: boolean }>`
   position: relative;
   margin: 16px 0;
   border-radius: 14px;
@@ -18,7 +18,7 @@ const StyledMasonryGridItem = styled.div<{ isLoading: boolean }>`
     position: absolute;
     width: 100%;
     transition: opacity 0.2s;
-    opacity: ${(props) => (props.isLoading ? 1 : 0)};
+    opacity: ${(props) => (props.$isLoading ? 1 : 0)};
   }
 `;
 
@@ -39,7 +39,7 @@ export const MasonryItem: React.FC<{
 
   return (
     <Link to={"/" + photo.id}>
-      <StyledMasonryGridItem isLoading={isLoading}>
+      <StyledMasonryGridItem $isLoading={isLoading}>
         <div
           className="placeholder"
           ref={placeholderEl}
