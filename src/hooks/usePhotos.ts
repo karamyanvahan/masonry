@@ -15,7 +15,7 @@ export const usePhotos = ({
   useEffect(() => {
     setIsLoading(true);
     fetchPhotos({ page, perPage })
-      .then((data) => setData(data.photos))
+      .then((data) => setData((prev) => [...prev, ...data.photos]))
       .finally(() => {
         setIsLoading(false);
       });

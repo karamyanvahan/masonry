@@ -1,28 +1,33 @@
 import { PexelsPhoto } from "api/types";
 import { usePhotos } from "hooks/usePhotos";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { findMinIndex } from "utils";
 import { MasonryItem } from "./MasonryItem";
 
 const StyledMasonryContainer = styled.div`
-  display: flex;
-  gap: 5px;
-  font-size: 0;
+  .photos-container {
+    display: flex;
+    gap: 5px;
+    font-size: 0;
 
-  & > div {
-    flex: 1;
+    & > div {
+      flex: 1;
+    }
   }
 `;
 
 export const Masonry: React.FC = () => {
   const colCount = 8;
-  const { data } = usePhotos({
-    page: 1,
+  const intersectionEl = useRef<HTMLDivElement>(null);
+
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = usePhotos({
+    page,
     perPage: 40,
   });
 
-  const normalizedPhotos = useMemo(() => {
+  const normalizedData = useMemo(() => {
     if (!data.length) {
       return null;
     }
@@ -45,15 +50,43 @@ export const Masonry: React.FC = () => {
     return result;
   }, [data]);
 
+  useEffect(() => {
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        if (isLoading) {
+          return;
+        }
+
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setPage((prev) => prev + 1);
+          }
+        });
+      },
+      {
+        rootMargin: "500px",
+      }
+    );
+
+    intersectionObserver.observe(intersectionEl.current!);
+
+    return () => {
+      intersectionObserver.disconnect();
+    };
+  }, [isLoading]);
+
   return (
     <StyledMasonryContainer>
-      {normalizedPhotos?.map((photos) => (
-        <div key={photos[0]?.id}>
-          {photos.map((photo, i) => (
-            <MasonryItem photo={photo} key={i} />
-          ))}
-        </div>
-      ))}
+      <div className="photos-container">
+        {normalizedData?.map((photos) => (
+          <div key={photos[0]?.id}>
+            {photos.map((photo, i) => (
+              <MasonryItem photo={photo} key={i} />
+            ))}
+          </div>
+        ))}
+      </div>
+      <div ref={intersectionEl}></div>
     </StyledMasonryContainer>
   );
 };
