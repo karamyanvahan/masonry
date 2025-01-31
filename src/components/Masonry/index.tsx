@@ -1,5 +1,5 @@
-import { PexelsPhoto } from "api/types";
-import { usePhotos } from "hooks/usePhotos";
+import { PexelsPhotoResponse } from "api/types";
+import { usePhotos } from "hooks/photos";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { findMinIndex } from "utils";
@@ -32,7 +32,7 @@ export const Masonry: React.FC = () => {
       return null;
     }
 
-    const result: PexelsPhoto[][] = [];
+    const result: PexelsPhotoResponse[][] = [];
     const heights: number[] = [];
 
     for (let i = 0; i < colCount; i++) {

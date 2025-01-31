@@ -1,4 +1,4 @@
-export type PexelsPhoto = {
+export type PexelsPhotoResponse = {
   id: number;
   width: number;
   height: number;
@@ -25,6 +25,6 @@ export type PexelsResponse = {
   next_page: string;
   page: number;
   per_page: number;
-  photos: PexelsPhoto[];
+  photos: PexelsPhotoResponse[];
   total_results: number;
 };

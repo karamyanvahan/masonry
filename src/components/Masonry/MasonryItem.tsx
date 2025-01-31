@@ -1,5 +1,6 @@
-import { PexelsPhoto } from "api/types";
+import { PexelsPhotoResponse } from "api/types";
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 import styled from "styled-components";
 
 const StyledMasonryGridItem = styled.div<{ isLoading: boolean }>`
@@ -22,7 +23,7 @@ const StyledMasonryGridItem = styled.div<{ isLoading: boolean }>`
 `;
 
 export const MasonryItem: React.FC<{
-  photo: PexelsPhoto;
+  photo: PexelsPhotoResponse;
 }> = ({ photo }) => {
   const placeholderEl = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,23 +38,25 @@ export const MasonryItem: React.FC<{
   }, [photo.height, photo.width]);
 
   return (
-    <StyledMasonryGridItem isLoading={isLoading}>
-      <div
-        className="placeholder"
-        ref={placeholderEl}
-        style={{
-          height: placeholderHeight + "px",
-          backgroundColor: photo.avg_color,
-        }}
-      ></div>
-      <img
-        height={isLoading ? placeholderHeight : undefined}
-        alt={photo.alt}
-        src={photo.src?.large}
-        onLoad={() => {
-          setIsLoading(false);
-        }}
-      />
-    </StyledMasonryGridItem>
+    <Link to={"/" + photo.id}>
+      <StyledMasonryGridItem isLoading={isLoading}>
+        <div
+          className="placeholder"
+          ref={placeholderEl}
+          style={{
+            height: placeholderHeight + "px",
+            backgroundColor: photo.avg_color,
+          }}
+        ></div>
+        <img
+          height={isLoading ? placeholderHeight : undefined}
+          alt={photo.alt}
+          src={photo.src?.medium}
+          onLoad={() => {
+            setIsLoading(false);
+          }}
+        />
+      </StyledMasonryGridItem>
+    </Link>
   );
 };

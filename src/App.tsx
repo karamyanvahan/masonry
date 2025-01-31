@@ -1,7 +1,7 @@
-import { Masonry } from "components/Masonry";
+import { Routing } from "routes";
 
 function App() {
-  return <Masonry />;
+  return <Routing />;
 }
 
 export default App;
