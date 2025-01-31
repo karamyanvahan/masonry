@@ -1,5 +1,7 @@
+import { Masonry } from "components/Masonry";
+
 function App() {
-  return <></>;
+  return <Masonry />;
 }
 
 export default App;
