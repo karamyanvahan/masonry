@@ -34,15 +34,17 @@ export const Masonry: React.FC<{
   className?: string;
   height?: string;
   selfScroll?: boolean;
-}> = ({ className, height, selfScroll }) => {
+  searchQuery?: string;
+}> = ({ className, height, selfScroll, searchQuery }) => {
   const colCount = 8;
   const intersectionEl = useRef<HTMLDivElement>(null);
   const containerEl = useRef<HTMLDivElement>(null);
 
   const [page, setPage] = useState(1);
-  const { data, isLoading } = usePhotos({
+  const { data, total, isLoading } = usePhotos({
     page,
     perPage: 40,
+    search: searchQuery,
   });
 
   const normalizedData = useMemo(() => {
@@ -71,7 +73,7 @@ export const Masonry: React.FC<{
   useEffect(() => {
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
-        if (isLoading) {
+        if (isLoading || data.length === total) {
           return;
         }
 

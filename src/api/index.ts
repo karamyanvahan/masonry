@@ -1,8 +1,9 @@
 import { PexelsPhotoResponse, PexelsResponse } from "./types";
 
-interface FetchParams {
+interface FetchPhotosParams {
   page?: number;
   perPage?: number;
+  search?: string;
 }
 const authToken = "HiFB93lWrN5DSnjOLyu5JzH1CzY21XAuXUBjrp1vctXjmxmhOPT742r0";
 
@@ -16,12 +17,19 @@ const appFetch = (url: string, options?: RequestInit) => {
   });
 };
 
-export const fetchPhotos = ({ page, perPage }: FetchParams) => {
+export const fetchPhotos = ({ page, perPage, search }: FetchPhotosParams) => {
   const searchParams = new URLSearchParams({
     page: page?.toString() ?? "1",
     per_page: perPage?.toString() ?? "30",
   });
 
+  if (search) {
+    searchParams.append("query", search);
+
+    return appFetch("/search?" + searchParams.toString()).then(
+      (res) => res.json() as Promise<PexelsResponse>
+    );
+  }
   return appFetch("/curated?" + searchParams.toString()).then(
     (res) => res.json() as Promise<PexelsResponse>
   );
