@@ -1,60 +1,44 @@
 import { PexelsPhotoResponse } from "api/types";
+import { Image } from "components/Image";
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import styled from "styled-components";
 
-const StyledMasonryGridItem = styled.div<{ $isLoading: boolean }>`
-  position: relative;
+const StyledMasonryGridItem = styled.div`
   margin: 16px 0;
   border-radius: 14px;
   overflow: hidden;
-
-  img {
-    width: 100%;
-  }
-
-  .placeholder {
-    pointer-events: none;
-    position: absolute;
-    width: 100%;
-    transition: opacity 0.2s;
-    opacity: ${(props) => (props.$isLoading ? 1 : 0)};
-  }
 `;
 
 export const MasonryItem: React.FC<{
   photo: PexelsPhotoResponse;
 }> = ({ photo }) => {
-  const placeholderEl = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [placeholderHeight, setPlaceholderHeight] = useState(0);
+  const imageEl = useRef<HTMLImageElement>(null);
+  const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    if (placeholderEl.current?.clientWidth) {
-      setPlaceholderHeight(
-        (placeholderEl.current?.clientWidth / photo.width) * photo.height
-      );
-    }
+    const setPlaceholderHeight = () => {
+      if (imageEl.current?.clientWidth) {
+        setHeight((imageEl.current.clientWidth / photo.width) * photo.height);
+      }
+    };
+    setPlaceholderHeight();
+    window.addEventListener("resize", setPlaceholderHeight);
+
+    return () => {
+      window.removeEventListener("resize", setPlaceholderHeight);
+    };
   }, [photo.height, photo.width]);
 
   return (
     <Link to={"/" + photo.id}>
-      <StyledMasonryGridItem $isLoading={isLoading}>
-        <div
-          className="placeholder"
-          ref={placeholderEl}
-          style={{
-            height: placeholderHeight + "px",
-            backgroundColor: photo.avg_color,
-          }}
-        ></div>
-        <img
-          height={isLoading ? placeholderHeight : undefined}
-          alt={photo.alt}
+      <StyledMasonryGridItem>
+        <Image
+          ref={imageEl}
+          height={height}
           src={photo.src?.medium}
-          onLoad={() => {
-            setIsLoading(false);
-          }}
+          alt={photo.alt}
+          placeholderColor={photo.avg_color}
         />
       </StyledMasonryGridItem>
     </Link>
