@@ -24,11 +24,15 @@ const StyledContainer = styled.div<{ $isLoading: boolean }>`
 `;
 
 export const Image = forwardRef<HTMLImageElement, ImageProps>(
-  ({ placeholderColor, height, ...imageProps }, ref) => {
+  ({ placeholderColor, height, className, ...imageProps }, ref) => {
     const [isLoading, setIsLoading] = useState(true);
 
     return (
-      <StyledContainer $isLoading={isLoading} style={{ height: height }}>
+      <StyledContainer
+        $isLoading={isLoading}
+        style={{ height: isLoading ? height : undefined }}
+        className={className}
+      >
         <div
           className="placeholder"
           style={{
