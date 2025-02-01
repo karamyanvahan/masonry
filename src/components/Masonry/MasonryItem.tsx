@@ -23,11 +23,6 @@ export const MasonryItem: React.FC<{
       }
     };
     setPlaceholderHeight();
-    window.addEventListener("resize", setPlaceholderHeight);
-
-    return () => {
-      window.removeEventListener("resize", setPlaceholderHeight);
-    };
   }, [photo.height, photo.width]);
 
   return (
