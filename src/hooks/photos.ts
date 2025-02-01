@@ -1,43 +1,45 @@
 import { fetchPhoto, fetchPhotos } from "api";
-import { PexelsPhotoResponse } from "api/types";
-import { useEffect, useMemo, useState } from "react";
+import { PexelsPhotoResponse, PexelsResponse } from "api/types";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export const usePhotos = ({
   page,
   perPage,
   search,
+  lazy,
 }: {
   page: number;
   perPage: number;
   search?: string;
+  lazy?: boolean;
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<PexelsPhotoResponse[]>([]);
-  const [total, setTotal] = useState<number>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<PexelsResponse>();
 
-  useEffect(() => {
-    setData([]);
-  }, [search]);
-
-  useEffect(() => {
+  const fetch = useCallback(() => {
     setIsLoading(true);
     fetchPhotos({ page, perPage, search })
-      .then((data) => {
-        setData((prev) => [...prev, ...data.photos]);
-        setTotal(data.total_results);
+      .then((res) => {
+        setData(res);
       })
       .finally(() => {
         setIsLoading(false);
       });
   }, [page, perPage, search]);
 
+  useEffect(() => {
+    if (!lazy) {
+      fetch();
+    }
+  }, [fetch, lazy]);
+
   return useMemo(
     () => ({
-      total,
+      fetch,
       data,
       isLoading,
     }),
-    [data, isLoading, total]
+    [data, fetch, isLoading]
   );
 };
 
