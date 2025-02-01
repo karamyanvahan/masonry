@@ -1,8 +1,10 @@
-import { forwardRef, ImgHTMLAttributes, useState } from "react";
+import { ImgHTMLAttributes, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   placeholderColor?: string;
+  width: number;
+  height: number;
 }
 
 const StyledContainer = styled.div<{ $isLoading: boolean }>`
@@ -23,30 +25,46 @@ const StyledContainer = styled.div<{ $isLoading: boolean }>`
   }
 `;
 
-export const Image = forwardRef<HTMLImageElement, ImageProps>(
-  ({ placeholderColor, height, className, ...imageProps }, ref) => {
-    const [isLoading, setIsLoading] = useState(true);
+export const Image: React.FC<ImageProps> = ({
+  placeholderColor,
+  height: outerHeight,
+  width: outerWidth,
+  className,
+  ...imageProps
+}) => {
+  const imageEl = useRef<HTMLImageElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    return (
-      <StyledContainer
-        $isLoading={isLoading}
-        style={{ height: isLoading ? height : undefined }}
-        className={className}
-      >
-        <div
-          className="placeholder"
-          style={{
-            backgroundColor: placeholderColor,
-          }}
-        ></div>
-        <img
-          ref={ref}
-          {...imageProps}
-          onLoad={() => {
-            setIsLoading(false);
-          }}
-        />
-      </StyledContainer>
-    );
-  }
-);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    const setPlaceholderHeight = () => {
+      if (imageEl.current?.clientWidth) {
+        setHeight((imageEl.current.clientWidth / outerWidth) * outerHeight);
+      }
+    };
+    setPlaceholderHeight();
+  }, [outerHeight, outerWidth]);
+
+  return (
+    <StyledContainer
+      $isLoading={isLoading}
+      style={{ height: isLoading ? height : undefined }}
+      className={className}
+    >
+      <div
+        className="placeholder"
+        style={{
+          backgroundColor: placeholderColor,
+        }}
+      ></div>
+      <img
+        ref={imageEl}
+        {...imageProps}
+        onLoad={() => {
+          setIsLoading(false);
+        }}
+      />
+    </StyledContainer>
+  );
+};
