@@ -128,8 +128,8 @@ export const Masonry: React.FC<{
       ref={containerEl}
     >
       <div className="photos-container">
-        {data.map((photos) => (
-          <div key={photos[0]?.id}>
+        {data.map((photos, i) => (
+          <div key={photos[0]?.id ?? i}>
             {photos.map((photo, i) => (
               <MasonryItem photo={photo} key={i} />
             ))}
