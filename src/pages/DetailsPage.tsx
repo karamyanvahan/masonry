@@ -2,7 +2,6 @@ import { usePhoto } from "hooks/photos";
 import { useParams } from "react-router";
 import { Image } from "components/Image";
 import styled from "styled-components";
-import { Container } from "components/Container";
 import { Masonry } from "components/Masonry";
 import { Loader } from "components/Loader";
 
@@ -50,34 +49,32 @@ export const DetailsPage: React.FC = () => {
   const { data, isLoading } = usePhoto({ id: params.id! });
 
   return (
-    <Container>
-      <StyledContainer>
-        <div className="img">
-          {data && !isLoading ? (
-            <Image
-              fetchPriority="high"
-              src={data.src?.large2x}
-              alt={data.alt}
-              width={data.width}
-              height={data.height}
-              placeholderColor={data.avg_color}
-            />
-          ) : (
-            <Loader />
+    <StyledContainer>
+      <div className="img">
+        {data && !isLoading ? (
+          <Image
+            fetchPriority="high"
+            src={data.src?.large2x}
+            alt={data.alt}
+            width={data.width}
+            height={data.height}
+            placeholderColor={data.avg_color}
+          />
+        ) : (
+          <Loader />
+        )}
+      </div>
+      <div className="right">
+        <div className="info">
+          {data && !isLoading && (
+            <>
+              <h1>{data.alt}</h1>
+              <h3>{data.photographer}</h3>
+            </>
           )}
         </div>
-        <div className="right">
-          <div className="info">
-            {data && !isLoading && (
-              <>
-                <h1>{data.alt}</h1>
-                <h3>{data.photographer}</h3>
-              </>
-            )}
-          </div>
-          <Masonry className="grid" selfScroll />
-        </div>
-      </StyledContainer>
-    </Container>
+        <Masonry className="grid" selfScroll />
+      </div>
+    </StyledContainer>
   );
 };
