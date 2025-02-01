@@ -17,6 +17,7 @@ export const MasonryItem: React.FC<{
     <Link to={"/" + photo.id}>
       <StyledMasonryGridItem>
         <Image
+          loading="lazy"
           width={photo.width}
           height={photo.height}
           src={photo.src?.medium}
