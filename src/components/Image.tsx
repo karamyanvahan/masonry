@@ -30,6 +30,7 @@ export const Image: React.FC<ImageProps> = ({
   height: outerHeight,
   width: outerWidth,
   className,
+  style,
   ...imageProps
 }) => {
   const imageEl = useRef<HTMLImageElement>(null);
@@ -49,7 +50,7 @@ export const Image: React.FC<ImageProps> = ({
   return (
     <StyledContainer
       $isLoading={isLoading}
-      style={{ height: isLoading ? height : undefined }}
+      style={{ height: isLoading ? height : undefined, ...style }}
       className={className}
     >
       <div

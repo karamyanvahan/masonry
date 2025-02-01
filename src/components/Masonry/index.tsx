@@ -17,7 +17,7 @@ const StyledMasonryContainer = styled.div`
   }
 `;
 
-export const Masonry: React.FC = () => {
+export const Masonry: React.FC<{ className?: string }> = ({ className }) => {
   const colCount = 8;
   const intersectionEl = useRef<HTMLDivElement>(null);
 
@@ -76,7 +76,7 @@ export const Masonry: React.FC = () => {
   }, [isLoading]);
 
   return (
-    <StyledMasonryContainer>
+    <StyledMasonryContainer className={className}>
       <div className="photos-container">
         {normalizedData?.map((photos) => (
           <div key={photos[0]?.id}>
