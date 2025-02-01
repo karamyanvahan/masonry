@@ -131,7 +131,7 @@ export const Masonry: React.FC<{
         {data.map((photos, i) => (
           <div key={photos[0]?.id ?? i}>
             {photos.map((photo, i) => (
-              <MasonryItem photo={photo} key={i} />
+              <MasonryItem photo={photo} key={photo.id + "" + i} />
             ))}
           </div>
         ))}
