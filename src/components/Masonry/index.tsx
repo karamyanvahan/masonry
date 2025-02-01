@@ -4,8 +4,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { findMinIndex } from "utils";
 import { MasonryItem } from "./MasonryItem";
+import React from "react";
+import { Loader } from "components/Loader";
 
-const StyledMasonryContainer = styled.div`
+const StyledMasonryContainer = styled.div<{
+  height?: string;
+  selfScroll?: boolean;
+}>`
+  overflow-y: ${(props) => (props.selfScroll ? "scroll" : "auto")};
+  height: ${(props) => props.height};
+
   .photos-container {
     display: flex;
     gap: 16px;
@@ -15,11 +23,21 @@ const StyledMasonryContainer = styled.div`
       flex: 1;
     }
   }
+
+  .loader-container {
+    display: flex;
+    justify-content: center;
+  }
 `;
 
-export const Masonry: React.FC<{ className?: string }> = ({ className }) => {
+export const Masonry: React.FC<{
+  className?: string;
+  height?: string;
+  selfScroll?: boolean;
+}> = ({ className, height, selfScroll }) => {
   const colCount = 8;
   const intersectionEl = useRef<HTMLDivElement>(null);
+  const containerEl = useRef<HTMLDivElement>(null);
 
   const [page, setPage] = useState(1);
   const { data, isLoading } = usePhotos({
@@ -64,6 +82,7 @@ export const Masonry: React.FC<{ className?: string }> = ({ className }) => {
         });
       },
       {
+        root: selfScroll ? containerEl.current : undefined,
         rootMargin: "500px",
       }
     );
@@ -73,10 +92,15 @@ export const Masonry: React.FC<{ className?: string }> = ({ className }) => {
     return () => {
       intersectionObserver.disconnect();
     };
-  }, [isLoading]);
+  }, [isLoading, selfScroll]);
 
   return (
-    <StyledMasonryContainer className={className}>
+    <StyledMasonryContainer
+      selfScroll={selfScroll}
+      className={className}
+      height={height}
+      ref={containerEl}
+    >
       <div className="photos-container">
         {normalizedData?.map((photos) => (
           <div key={photos[0]?.id}>
@@ -87,6 +111,11 @@ export const Masonry: React.FC<{ className?: string }> = ({ className }) => {
         ))}
       </div>
       <div ref={intersectionEl}></div>
+      {isLoading && (
+        <div className="loader-container">
+          <Loader />
+        </div>
+      )}
     </StyledMasonryContainer>
   );
 };
