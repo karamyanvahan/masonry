@@ -1,6 +1,6 @@
 import { PexelsPhotoResponse } from "api/types";
 import { usePhotos } from "hooks/photos";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { findMinIndex } from "utils";
 import { MasonryItem } from "./MasonryItem";
@@ -37,21 +37,20 @@ export const Masonry: React.FC<{
   searchQuery?: string;
 }> = ({ className, height, selfScroll, searchQuery }) => {
   const colCount = 8;
+  const perPage = 40;
   const intersectionEl = useRef<HTMLDivElement>(null);
   const containerEl = useRef<HTMLDivElement>(null);
-
+  const [data, setData] = useState(
+    new Array<PexelsPhotoResponse[]>(colCount).fill([])
+  );
   const [page, setPage] = useState(1);
-  const { data, total, isLoading } = usePhotos({
+  const { data: response, isLoading } = usePhotos({
     page,
-    perPage: 40,
+    perPage,
     search: searchQuery,
   });
 
-  const normalizedData = useMemo(() => {
-    if (!data.length) {
-      return null;
-    }
-
+  const normalizeData = useCallback((data: PexelsPhotoResponse[]) => {
     const result: PexelsPhotoResponse[][] = [];
     const heights: number[] = [];
 
@@ -68,12 +67,37 @@ export const Masonry: React.FC<{
     });
 
     return result;
-  }, [data]);
+  }, []);
+
+  const normalizedResponse = useMemo(() => {
+    if (!response) {
+      return null;
+    }
+    return normalizeData(response.photos);
+  }, [normalizeData, response]);
+
+  useEffect(() => {
+    if (!normalizedResponse) {
+      return;
+    }
+
+    setData((prev) => {
+      return prev.map((col, i) => col.concat(normalizedResponse[i]));
+    });
+  }, [normalizedResponse]);
+
+  useEffect(() => {
+    setData(new Array<PexelsPhotoResponse[]>(colCount).fill([]));
+    setPage(1);
+  }, [searchQuery]);
 
   useEffect(() => {
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
-        if (isLoading || data.length === total) {
+        if (
+          isLoading ||
+          (response && page * perPage > response?.total_results)
+        ) {
           return;
         }
 
@@ -94,7 +118,7 @@ export const Masonry: React.FC<{
     return () => {
       intersectionObserver.disconnect();
     };
-  }, [isLoading, selfScroll]);
+  }, [isLoading, page, response, selfScroll]);
 
   return (
     <StyledMasonryContainer
@@ -104,7 +128,7 @@ export const Masonry: React.FC<{
       ref={containerEl}
     >
       <div className="photos-container">
-        {normalizedData?.map((photos) => (
+        {data.map((photos) => (
           <div key={photos[0]?.id}>
             {photos.map((photo, i) => (
               <MasonryItem photo={photo} key={i} />
