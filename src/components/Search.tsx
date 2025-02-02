@@ -76,7 +76,8 @@ export const Search: React.FC<{ onSearch: (q: string) => void }> = ({
       <StyledSearch>
         <div className="search">
           <input
-            type="text"
+            type="search"
+            inputMode="search"
             className="search__input"
             placeholder="Search"
             ref={inputRef}
