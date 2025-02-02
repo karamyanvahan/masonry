@@ -31,10 +31,14 @@ export const Image: React.FC<ImageProps> = ({
   width: outerWidth,
   className,
   style,
+  src,
   ...imageProps
 }) => {
   const imageEl = useRef<HTMLImageElement>(null);
+  const retryCount = useRef(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [imageSrc, setImageSrc] = useState(src);
 
   const [height, setHeight] = useState(0);
 
@@ -46,6 +50,31 @@ export const Image: React.FC<ImageProps> = ({
     };
     setPlaceholderHeight();
   }, [outerHeight, outerWidth]);
+
+  useEffect(() => {
+    if (!hasError) {
+      return;
+    }
+
+    let intervalId: number | null = null;
+    intervalId = setInterval(() => {
+      if (retryCount.current > 5) {
+        clearInterval(intervalId!);
+      }
+      if (navigator.onLine) {
+        setImageSrc("");
+        setTimeout(() => {
+          setImageSrc(src);
+          retryCount.current++;
+        });
+      }
+    }, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasError]);
 
   return (
     <StyledContainer
@@ -62,8 +91,13 @@ export const Image: React.FC<ImageProps> = ({
       <img
         ref={imageEl}
         {...imageProps}
+        src={imageSrc}
         onLoad={() => {
+          setHasError(false);
           setIsLoading(false);
+        }}
+        onError={() => {
+          setHasError(true);
         }}
       />
     </StyledContainer>
