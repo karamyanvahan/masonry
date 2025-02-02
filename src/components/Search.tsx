@@ -37,7 +37,7 @@ const StyledSearch = styled.div`
 
   .search__input::-webkit-input-placeholder {
     font-weight: 100;
-    color: #ccc;
+    color: #676666;
   }
 
   .search__input:focus + .search__button {
