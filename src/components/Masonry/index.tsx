@@ -177,11 +177,7 @@ export const Masonry: React.FC<{
         ))}
       </div>
       <div ref={intersectionEl}></div>
-      {isLoading && (
-        <div className="loader-container">
-          <Loader />
-        </div>
-      )}
+      <div className="loader-container">{isLoading && <Loader />}</div>
     </StyledMasonryContainer>
   );
 };
