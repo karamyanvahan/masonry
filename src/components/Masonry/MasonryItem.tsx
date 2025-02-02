@@ -14,7 +14,7 @@ export const MasonryItem: React.FC<{
   photo: PexelsPhotoResponse;
 }> = ({ photo }) => {
   return (
-    <Link to={"/" + photo.id}>
+    <Link to={"/" + photo.id + window.location.search}>
       <StyledMasonryGridItem>
         <Image
           loading="lazy"
