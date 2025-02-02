@@ -1,6 +1,6 @@
 import { PexelsPhotoResponse } from "api/types";
 import { usePhotos } from "hooks/photos";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { findMinIndex } from "utils";
 import { MasonryItem } from "./MasonryItem";
@@ -38,17 +38,19 @@ export const Masonry: React.FC<{
   searchQuery?: string;
 }> = ({ className, height, selfScroll, searchQuery }) => {
   const perPage = 40;
+  const colWidth = 180;
   const intersectionEl = useRef<HTMLDivElement>(null);
   const containerEl = useRef<HTMLDivElement>(null);
   const rowData = useRef<PexelsPhotoResponse[]>([]);
   const heights = useRef<number[]>([]);
   const [colCount, setColCount] = useState<number>(0);
   const [data, setData] = useState<PexelsPhotoResponse[][]>([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const { data: response, isLoading } = usePhotos({
     page,
     perPage,
     search: searchQuery,
+    skip: page === 0,
   });
 
   const normalizeData = useCallback(
@@ -74,19 +76,12 @@ export const Masonry: React.FC<{
     [colCount]
   );
 
-  const normalizedResponse = useMemo(() => {
-    if (!response) {
-      return null;
-    }
-    rowData.current.push(...response.photos);
-    return normalizeData(response.photos);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [response]);
-
   useEffect(() => {
-    if (!normalizedResponse) {
+    if (!response) {
       return;
     }
+    rowData.current.push(...response.photos);
+    const normalizedResponse = normalizeData(response.photos);
 
     setData((prev) => {
       if (prev.length === 0) {
@@ -94,24 +89,36 @@ export const Masonry: React.FC<{
       }
       return prev.map((col, i) => col.concat(normalizedResponse[i]));
     });
-  }, [normalizedResponse]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [response]);
 
   useEffect(() => {
     heights.current = heights.current.map(() => 0);
     setData([]);
     rowData.current = [];
-    setPage(1);
+    setPage(0);
   }, [searchQuery]);
 
   useEffect(() => {
     if (!containerEl.current) {
       return;
     }
-
+    setColCount(
+      Math.max(Math.floor(containerEl.current.clientWidth / colWidth), 3)
+    );
+    let toId: number | null = null;
     const resizeObserver = new ResizeObserver((entries) => {
-      setColCount(
-        Math.floor(entries[0].contentBoxSize[0].inlineSize / 180) || 1
-      );
+      if (toId) {
+        clearTimeout(toId);
+      }
+      toId = setTimeout(() => {
+        setColCount(
+          Math.max(
+            Math.floor(entries[0].contentBoxSize[0].inlineSize / colWidth),
+            3
+          )
+        );
+      }, 200);
     });
 
     resizeObserver.observe(containerEl.current);
@@ -124,7 +131,7 @@ export const Masonry: React.FC<{
   useEffect(() => {
     heights.current = new Array(colCount).fill(0);
     setData(normalizeData(rowData.current));
-  }, [normalizeData, colCount]);
+  }, [colCount]);
 
   useEffect(() => {
     const intersectionObserver = new IntersectionObserver(
