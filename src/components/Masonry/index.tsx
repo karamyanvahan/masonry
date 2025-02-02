@@ -51,6 +51,9 @@ export const Masonry: React.FC<{
 
   const normalizeData = useCallback(
     (data: PexelsPhotoResponse[]) => {
+      if (colCount === 0) {
+        return [];
+      }
       const result: PexelsPhotoResponse[][] = [];
       const heights: number[] = [];
 
