@@ -143,6 +143,7 @@ export const Masonry: React.FC<{
   }, [colCount]);
 
   useEffect(() => {
+    let timeoutId = 0;
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
         if (
@@ -154,7 +155,11 @@ export const Masonry: React.FC<{
         }
 
         if (entries[0].isIntersecting) {
-          setPage((prev) => prev + 1);
+          timeoutId = setTimeout(() => {
+            setPage((prev) => prev + 1);
+          }, 100);
+        } else {
+          clearTimeout(timeoutId);
         }
       },
       {
