@@ -36,13 +36,12 @@ export const Masonry: React.FC<{
   selfScroll?: boolean;
   searchQuery?: string;
 }> = ({ className, height, selfScroll, searchQuery }) => {
-  const colCount = 8;
   const perPage = 40;
   const intersectionEl = useRef<HTMLDivElement>(null);
   const containerEl = useRef<HTMLDivElement>(null);
-  const [data, setData] = useState(
-    new Array<PexelsPhotoResponse[]>(colCount).fill([])
-  );
+  const rowData = useRef<PexelsPhotoResponse[]>([]);
+  const [colCount, setColCount] = useState<number>(0);
+  const [data, setData] = useState<PexelsPhotoResponse[][]>([]);
   const [page, setPage] = useState(1);
   const { data: response, isLoading } = usePhotos({
     page,
@@ -50,31 +49,36 @@ export const Masonry: React.FC<{
     search: searchQuery,
   });
 
-  const normalizeData = useCallback((data: PexelsPhotoResponse[]) => {
-    const result: PexelsPhotoResponse[][] = [];
-    const heights: number[] = [];
+  const normalizeData = useCallback(
+    (data: PexelsPhotoResponse[]) => {
+      const result: PexelsPhotoResponse[][] = [];
+      const heights: number[] = [];
 
-    for (let i = 0; i < colCount; i++) {
-      result.push([]);
-      heights.push(0);
-    }
+      for (let i = 0; i < colCount; i++) {
+        result.push([]);
+        heights.push(0);
+      }
 
-    data.forEach((photo) => {
-      const mostEmptyIndex = findMinIndex(heights);
-      const mostEmpty = result[mostEmptyIndex];
-      heights[mostEmptyIndex] += photo.height / photo.width;
-      mostEmpty.push(photo);
-    });
+      data.forEach((photo) => {
+        const mostEmptyIndex = findMinIndex(heights);
+        const mostEmpty = result[mostEmptyIndex];
+        heights[mostEmptyIndex] += photo.height / photo.width;
+        mostEmpty.push(photo);
+      });
 
-    return result;
-  }, []);
+      return result;
+    },
+    [colCount]
+  );
 
   const normalizedResponse = useMemo(() => {
     if (!response) {
       return null;
     }
+    rowData.current.push(...response.photos);
     return normalizeData(response.photos);
-  }, [normalizeData, response]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [response]);
 
   useEffect(() => {
     if (!normalizedResponse) {
@@ -82,14 +86,40 @@ export const Masonry: React.FC<{
     }
 
     setData((prev) => {
+      if (prev.length === 0) {
+        return normalizedResponse;
+      }
       return prev.map((col, i) => col.concat(normalizedResponse[i]));
     });
   }, [normalizedResponse]);
 
   useEffect(() => {
-    setData(new Array<PexelsPhotoResponse[]>(colCount).fill([]));
+    setData([]);
+    rowData.current = [];
     setPage(1);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (!containerEl.current) {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      setColCount(
+        Math.floor(entries[0].contentBoxSize[0].inlineSize / 180) || 1
+      );
+    });
+
+    resizeObserver.observe(containerEl.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    setData(normalizeData(rowData.current));
+  }, [normalizeData, colCount]);
 
   useEffect(() => {
     const intersectionObserver = new IntersectionObserver(
@@ -101,11 +131,9 @@ export const Masonry: React.FC<{
           return;
         }
 
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setPage((prev) => prev + 1);
-          }
-        });
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
       },
       {
         root: selfScroll ? containerEl.current : undefined,
