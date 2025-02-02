@@ -1,7 +1,8 @@
-import { usePhoto } from "hooks/photos";
-import { useParams } from "react-router";
-import { Image } from "components/Image";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import styled from "styled-components";
+import { usePhoto } from "hooks/photos";
+import { Link, useParams, useSearchParams } from "react-router";
+import { Image } from "components/Image";
 import { Masonry } from "components/Masonry";
 import { Loader } from "components/Loader";
 
@@ -10,10 +11,10 @@ const StyledContainer = styled.div`
   align-items: start;
   gap: 16px;
 
-  .img {
+  .left {
     flex: 1;
     padding-top: 10px;
-    img {
+    .image-wrapper {
       border-radius: 14px;
       overflow: hidden;
     }
@@ -47,19 +48,25 @@ const StyledContainer = styled.div`
 export const DetailsPage: React.FC = () => {
   const params = useParams();
   const { data, isLoading } = usePhoto({ id: params.id! });
+  const [searchParams] = useSearchParams();
 
   return (
     <StyledContainer>
-      <div className="img">
+      <div className="left">
+        <Link to={"/?" + searchParams.toString()}>
+          <AiOutlineArrowLeft size="40px" />
+        </Link>
         {data && !isLoading ? (
-          <Image
-            fetchPriority="high"
-            src={data.src?.large2x}
-            alt={data.alt}
-            width={data.width}
-            height={data.height}
-            placeholderColor={data.avg_color}
-          />
+          <div className="image-wrapper">
+            <Image
+              fetchPriority="high"
+              src={data.src?.large2x}
+              alt={data.alt}
+              width={data.width}
+              height={data.height}
+              placeholderColor={data.avg_color}
+            />
+          </div>
         ) : (
           <Loader />
         )}
@@ -73,7 +80,11 @@ export const DetailsPage: React.FC = () => {
             </>
           )}
         </div>
-        <Masonry className="grid" selfScroll />
+        <Masonry
+          className="grid"
+          selfScroll
+          searchQuery={searchParams.get("q") ?? ""}
+        />
       </div>
     </StyledContainer>
   );
