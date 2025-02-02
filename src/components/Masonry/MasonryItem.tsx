@@ -5,17 +5,23 @@ import { Link } from "react-router";
 import styled from "styled-components";
 
 const StyledMasonryGridItem = styled.div`
-  margin: 16px 0;
+  position: absolute;
   border-radius: 14px;
   overflow: hidden;
+
+  width: 100%;
+  img {
+    width: 100%;
+  }
 `;
 
 export const MasonryItem: React.FC<{
   photo: PexelsPhotoResponse;
-}> = ({ photo }) => {
+  y: number;
+}> = ({ photo, y }) => {
   return (
     <Link to={"/" + photo.id + window.location.search}>
-      <StyledMasonryGridItem>
+      <StyledMasonryGridItem style={{ top: y }}>
         <Image
           loading="lazy"
           width={photo.width}

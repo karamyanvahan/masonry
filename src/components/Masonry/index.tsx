@@ -9,18 +9,20 @@ import { Loader } from "components/Loader";
 import { Button } from "components/Button";
 import { Text } from "components/Text";
 
+type DataItem = PexelsPhotoResponse & { y: number; key: string };
+
 const StyledMasonryContainer = styled.div<{
   height?: string;
-  selfScroll?: boolean;
+  imageContainerHeight: number;
 }>`
-  overflow-y: ${(props) => (props.selfScroll ? "scroll" : "visible")};
-  height: ${(props) => props.height};
+  overflow-y: scroll;
+  height: ${(props) => props.height ?? "100%"};
 
   .photos-container {
     display: flex;
     gap: 16px;
     font-size: 0;
-
+    height: ${(props) => props.imageContainerHeight + "px"};
     & > div {
       flex: 1;
     }
@@ -32,6 +34,10 @@ const StyledMasonryContainer = styled.div<{
     align-items: center;
     gap: 14px;
     height: 100px;
+  }
+
+  .row {
+    position: relative;
   }
 `;
 
@@ -48,7 +54,8 @@ export const Masonry: React.FC<{
   const rowData = useRef<PexelsPhotoResponse[]>([]);
   const heights = useRef<number[]>([]);
   const [colCount, setColCount] = useState<number>(0);
-  const [data, setData] = useState<PexelsPhotoResponse[][]>([]);
+  const [data, setData] = useState<DataItem[][]>([]);
+  const [virtualizedData, setVirtualizedData] = useState<DataItem[][]>([]);
   const [page, setPage] = useState(0);
   const {
     data: response,
@@ -67,17 +74,27 @@ export const Masonry: React.FC<{
       if (colCount === 0) {
         return [];
       }
-      const result: PexelsPhotoResponse[][] = [];
+      const gap = 16;
+      const itemWidth =
+        ((containerEl.current?.clientWidth ?? 0) - (colCount - 1) * gap) /
+        colCount;
+      const result: DataItem[][] = [];
 
       for (let i = 0; i < colCount; i++) {
         result.push([]);
       }
 
-      data.forEach((photo) => {
+      data.forEach((photo, index) => {
         const mostEmptyIndex = findMinIndex(heights.current);
         const mostEmpty = result[mostEmptyIndex];
-        heights.current[mostEmptyIndex] += photo.height / photo.width;
-        mostEmpty.push(photo);
+        const itemHeight = (photo.height / photo.width) * itemWidth;
+
+        mostEmpty.push({
+          ...photo,
+          y: heights.current[mostEmptyIndex],
+          key: photo.id + "" + index,
+        });
+        heights.current[mostEmptyIndex] += itemHeight + gap;
       });
 
       return result;
@@ -175,18 +192,45 @@ export const Masonry: React.FC<{
     };
   }, [error, isLoading, page, response, selfScroll]);
 
+  useEffect(() => {
+    const container = containerEl.current;
+    if (!container) {
+      return;
+    }
+
+    const updateVirtualizedData = () => {
+      const result = data.map((row) =>
+        row.filter(
+          (item) =>
+            item.y > container.scrollTop - 1000 &&
+            item.y < container.scrollTop + container.clientHeight + 1000
+        )
+      );
+
+      setVirtualizedData(result);
+    };
+
+    updateVirtualizedData();
+
+    container.addEventListener("scroll", updateVirtualizedData);
+
+    return () => {
+      container.removeEventListener("scroll", updateVirtualizedData);
+    };
+  }, [data]);
+
   return (
     <StyledMasonryContainer
-      selfScroll={selfScroll}
       className={className}
       height={height}
+      imageContainerHeight={Math.max(...heights.current)}
       ref={containerEl}
     >
       <div className="photos-container">
-        {data.map((photos, i) => (
-          <div key={photos[0]?.id ?? i}>
-            {photos.map((photo, i) => (
-              <MasonryItem photo={photo} key={photo.id + "" + i} />
+        {virtualizedData.map((photos, i) => (
+          <div key={i} className="row">
+            {photos.map((photo) => (
+              <MasonryItem y={photo.y} photo={photo} key={photo.key} />
             ))}
           </div>
         ))}

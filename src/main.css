@@ -138,6 +138,14 @@ button {
   font: inherit;
 }
 
+html {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
 body {
   font-family: "Poppins", serif;
+  height: 100%;
+  overflow: auto;
+  position: relative;
 }
