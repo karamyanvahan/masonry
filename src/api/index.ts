@@ -7,6 +7,10 @@ interface FetchPhotosParams {
 }
 const authToken = "HiFB93lWrN5DSnjOLyu5JzH1CzY21XAuXUBjrp1vctXjmxmhOPT742r0";
 
+export class HttpError {
+  constructor(public status: number) {}
+}
+
 const appFetch = (url: string, options?: RequestInit) => {
   return fetch("https://api.pexels.com/v1" + url, {
     ...options,
@@ -14,6 +18,11 @@ const appFetch = (url: string, options?: RequestInit) => {
       Authorization: authToken,
       ...options?.headers,
     },
+  }).then((response) => {
+    if (!response.ok) {
+      throw new HttpError(response.status);
+    }
+    return response;
   });
 };
 

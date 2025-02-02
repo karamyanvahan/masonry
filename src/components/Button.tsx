@@ -5,6 +5,7 @@ export const Button = styled.button<{ variant?: Variant }>`
   color: ${({ theme, variant }) => theme[variant ?? "default"]};
   padding: 1em;
   transition: 0.1s;
+  border-radius: 14px;
 
   &:hover {
     background-color: ${({ theme, variant }) => theme[variant ?? "default"]};

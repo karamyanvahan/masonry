@@ -1,7 +1,7 @@
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import styled from "styled-components";
 import { usePhoto } from "hooks/photos";
-import { Link, useParams, useSearchParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { Image } from "components/Image";
 import { Masonry } from "components/Masonry";
 import { Loader } from "components/Loader";
@@ -47,8 +47,18 @@ const StyledContainer = styled.div`
 
 export const DetailsPage: React.FC = () => {
   const params = useParams();
-  const { data, isLoading } = usePhoto({ id: params.id! });
+  const { data, isLoading, error } = usePhoto({ id: params.id! });
   const [searchParams] = useSearchParams();
+
+  const navigate = useNavigate();
+
+  if (error) {
+    if (error.status === 404) {
+      navigate("/not-found", { replace: true });
+    } else {
+      navigate("/something-went-wrong", { replace: true });
+    }
+  }
 
   return (
     <StyledContainer>
@@ -56,7 +66,7 @@ export const DetailsPage: React.FC = () => {
         <Link to={"/?" + searchParams.toString()}>
           <AiOutlineArrowLeft size="40px" />
         </Link>
-        {data && !isLoading ? (
+        {data && !isLoading && (
           <div className="image-wrapper">
             <Image
               fetchPriority="high"
@@ -67,16 +77,15 @@ export const DetailsPage: React.FC = () => {
               placeholderColor={data.avg_color}
             />
           </div>
-        ) : (
-          <Loader />
         )}
+        {isLoading && <Loader />}
       </div>
       <div className="right">
         <div className="info">
-          {data && !isLoading && (
+          {!isLoading && (
             <>
-              <h1>{data.alt}</h1>
-              <h3>{data.photographer}</h3>
+              <h1>{data?.alt}</h1>
+              <h3>{data?.photographer}</h3>
             </>
           )}
         </div>

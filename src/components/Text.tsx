@@ -1,14 +1,18 @@
 import { PropsWithChildren } from "react";
 import styled from "styled-components";
 
-const StyledText = styled.p<{ variant: Variant }>`
-  color: ${({ theme, variant }) => theme[variant]};
+interface StyledTextProps {
+  variant?: Variant;
+}
+
+const StyledText = styled.p<StyledTextProps>`
+  color: ${({ theme, variant }) => theme[variant ?? "default"]};
 `;
 export const Text: React.FC<
-  PropsWithChildren<{ tag?: string; variant: Variant }>
-> = ({ tag, variant, children }) => {
+  PropsWithChildren<{ tag?: string } & StyledTextProps>
+> = ({ tag, children, ...textProps }) => {
   return (
-    <StyledText as={tag} variant={variant}>
+    <StyledText as={tag ?? "p"} {...textProps}>
       {children}
     </StyledText>
   );

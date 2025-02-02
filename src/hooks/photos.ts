@@ -1,4 +1,4 @@
-import { fetchPhoto, fetchPhotos } from "api";
+import { fetchPhoto, fetchPhotos, HttpError } from "api";
 import { PexelsPhotoResponse, PexelsResponse } from "api/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -52,11 +52,14 @@ export const usePhotos = ({
 export const usePhoto = ({ id }: { id: string }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<PexelsPhotoResponse | null>(null);
+  const [error, setError] = useState<HttpError | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
+    setError(null);
     fetchPhoto(id)
       .then(setData)
+      .catch(setError)
       .finally(() => {
         setIsLoading(false);
       });
@@ -66,7 +69,8 @@ export const usePhoto = ({ id }: { id: string }) => {
     () => ({
       data,
       isLoading,
+      error,
     }),
-    [data, isLoading]
+    [data, error, isLoading]
   );
 };
