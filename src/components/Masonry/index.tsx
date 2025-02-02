@@ -6,6 +6,8 @@ import { findMinIndex } from "utils";
 import { MasonryItem } from "./MasonryItem";
 import React from "react";
 import { Loader } from "components/Loader";
+import { Button } from "components/Button";
+import { Text } from "components/Text";
 
 const StyledMasonryContainer = styled.div<{
   height?: string;
@@ -24,9 +26,11 @@ const StyledMasonryContainer = styled.div<{
     }
   }
 
-  .loader-container {
+  .bottom {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
     height: 100px;
   }
 `;
@@ -46,7 +50,12 @@ export const Masonry: React.FC<{
   const [colCount, setColCount] = useState<number>(0);
   const [data, setData] = useState<PexelsPhotoResponse[][]>([]);
   const [page, setPage] = useState(0);
-  const { data: response, isLoading } = usePhotos({
+  const {
+    data: response,
+    isLoading,
+    error,
+    fetch,
+  } = usePhotos({
     page,
     perPage,
     search: searchQuery,
@@ -138,6 +147,7 @@ export const Masonry: React.FC<{
       (entries) => {
         if (
           isLoading ||
+          error ||
           (response && page * perPage > response?.total_results)
         ) {
           return;
@@ -158,7 +168,7 @@ export const Masonry: React.FC<{
     return () => {
       intersectionObserver.disconnect();
     };
-  }, [isLoading, page, response, selfScroll]);
+  }, [error, isLoading, page, response, selfScroll]);
 
   return (
     <StyledMasonryContainer
@@ -177,7 +187,23 @@ export const Masonry: React.FC<{
         ))}
       </div>
       <div ref={intersectionEl}></div>
-      <div className="loader-container">{isLoading && <Loader />}</div>
+      <div className="bottom">
+        {isLoading && <Loader />}
+        {error && (
+          <>
+            <Text variant="error">Failed to fetch</Text>
+            <Button
+              variant="error"
+              type="button"
+              onClick={() => {
+                fetch();
+              }}
+            >
+              Try again
+            </Button>
+          </>
+        )}
+      </div>
     </StyledMasonryContainer>
   );
 };
