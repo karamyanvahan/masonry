@@ -11,7 +11,7 @@ const StyledMasonryContainer = styled.div<{
   height?: string;
   selfScroll?: boolean;
 }>`
-  overflow-y: ${(props) => (props.selfScroll ? "scroll" : "auto")};
+  overflow-y: ${(props) => (props.selfScroll ? "scroll" : "visible")};
   height: ${(props) => props.height};
 
   .photos-container {
@@ -27,6 +27,7 @@ const StyledMasonryContainer = styled.div<{
   .loader-container {
     display: flex;
     justify-content: center;
+    height: 100px;
   }
 `;
 
@@ -40,6 +41,7 @@ export const Masonry: React.FC<{
   const intersectionEl = useRef<HTMLDivElement>(null);
   const containerEl = useRef<HTMLDivElement>(null);
   const rowData = useRef<PexelsPhotoResponse[]>([]);
+  const heights = useRef<number[]>([]);
   const [colCount, setColCount] = useState<number>(0);
   const [data, setData] = useState<PexelsPhotoResponse[][]>([]);
   const [page, setPage] = useState(1);
@@ -55,17 +57,15 @@ export const Masonry: React.FC<{
         return [];
       }
       const result: PexelsPhotoResponse[][] = [];
-      const heights: number[] = [];
 
       for (let i = 0; i < colCount; i++) {
         result.push([]);
-        heights.push(0);
       }
 
       data.forEach((photo) => {
-        const mostEmptyIndex = findMinIndex(heights);
+        const mostEmptyIndex = findMinIndex(heights.current);
         const mostEmpty = result[mostEmptyIndex];
-        heights[mostEmptyIndex] += photo.height / photo.width;
+        heights.current[mostEmptyIndex] += photo.height / photo.width;
         mostEmpty.push(photo);
       });
 
@@ -97,6 +97,7 @@ export const Masonry: React.FC<{
   }, [normalizedResponse]);
 
   useEffect(() => {
+    heights.current = heights.current.map(() => 0);
     setData([]);
     rowData.current = [];
     setPage(1);
@@ -121,6 +122,7 @@ export const Masonry: React.FC<{
   }, []);
 
   useEffect(() => {
+    heights.current = new Array(colCount).fill(0);
     setData(normalizeData(rowData.current));
   }, [normalizeData, colCount]);
 
