@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-export const Loader = styled.div`
+const StyledLoader = styled.div`
   height: 40px;
   aspect-ratio: 0.866;
   display: grid;
@@ -40,3 +41,23 @@ export const Loader = styled.div`
     }
   }
 `;
+
+export const Loader = () => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const to = setTimeout(() => {
+      setVisible(true);
+    }, 300);
+
+    return () => {
+      clearTimeout(to);
+    };
+  }, []);
+
+  if (!visible) {
+    return null;
+  }
+
+  return <StyledLoader />;
+};
