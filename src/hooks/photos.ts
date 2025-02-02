@@ -1,6 +1,6 @@
 import { fetchPhoto, fetchPhotos } from "api";
 import { PexelsPhotoResponse, PexelsResponse } from "api/types";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export const usePhotos = ({
   page,
@@ -14,29 +14,38 @@ export const usePhotos = ({
   skip?: boolean;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const [data, setData] = useState<PexelsResponse>();
+
+  const fetch = useCallback(() => {
+    setError(null);
+    setIsLoading(true);
+    fetchPhotos({ page, perPage, search })
+      .then((res) => {
+        setData(res);
+      })
+      .catch(setError)
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [page, perPage, search]);
 
   useEffect(() => {
     if (skip) {
       return;
     }
 
-    setIsLoading(true);
-    fetchPhotos({ page, perPage, search })
-      .then((res) => {
-        setData(res);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    fetch();
   }, [page, perPage]);
 
   return useMemo(
     () => ({
       data,
       isLoading,
+      error,
+      fetch,
     }),
-    [data, isLoading]
+    [data, error, fetch, isLoading]
   );
 };
 
