@@ -11,21 +11,10 @@ import { GridData, VirtualizedGrid } from "./VirtualizedGrid";
 
 const StyledMasonryContainer = styled.div<{
   height?: string;
-  imageContainerHeight: number;
 }>`
   overflow-y: scroll;
   height: ${(props) => props.height ?? "100%"};
   padding-inline: 16px;
-
-  .photos-container {
-    display: flex;
-    gap: 16px;
-    font-size: 0;
-    height: ${(props) => props.imageContainerHeight + "px"};
-    & > div {
-      flex: 1;
-    }
-  }
 
   .bottom {
     display: flex;
@@ -182,10 +171,13 @@ export const Masonry: React.FC<{
     <StyledMasonryContainer
       className={className}
       height={height}
-      imageContainerHeight={Math.max(...(heights.current ?? [0]))}
       ref={containerEl}
     >
-      <VirtualizedGrid data={data} container={containerEl} />
+      <VirtualizedGrid
+        height={Math.max(...(heights.current ?? [0]))}
+        data={data}
+        container={containerEl}
+      />
       <div ref={intersectionEl}></div>
       <div className="bottom">
         {isLoading && <Loader />}

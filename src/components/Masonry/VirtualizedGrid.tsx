@@ -2,6 +2,7 @@ import { PexelsPhotoResponse } from "api/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MasonryItem } from "./MasonryItem";
 import React from "react";
+import styled from "styled-components";
 
 export type DataItem = PexelsPhotoResponse & { y: number; key: string };
 export type GridData = DataItem[][];
@@ -10,9 +11,20 @@ type Direction = "top" | "mid" | "bottom";
 interface VirtualizedGridProps {
   data: GridData;
   container: React.RefObject<HTMLDivElement>;
+  height: number;
 }
+
+const StyledGrid = styled.div<{ height: number }>`
+  display: flex;
+  gap: 16px;
+  font-size: 0;
+  height: ${(props) => props.height + "px"};
+  & > div {
+    flex: 1;
+  }
+`;
 export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
-  ({ data, container: containerRef }) => {
+  ({ data, container: containerRef, height }) => {
     const scrollDir = useRef<Direction>("mid");
     const lastScrollPosDelayed = useRef(0);
     const [virtualizedData, setVirtualizedData] = useState<GridData>([]);
@@ -86,15 +98,15 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
     }, [containerRef, updateVirtualizedData]);
 
     return (
-      <div className="photos-container">
+      <StyledGrid height={height}>
         {virtualizedData.map((photos, i) => (
           <div key={i} className="row">
             {photos.map((photo) => (
-              <MasonryItem y={photo.y} photo={photo} key={photo.key} />
+              <MasonryItem photo={photo} key={photo.key} />
             ))}
           </div>
         ))}
-      </div>
+      </StyledGrid>
     );
   }
 );
