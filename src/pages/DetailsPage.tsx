@@ -8,6 +8,9 @@ import { Masonry } from "components/Masonry";
 import { useEffect } from "react";
 
 const StyledContainer = styled.div`
+  .top {
+    min-height: calc(100vh - 90px);
+  }
   .img-container {
     display: flex;
     justify-content: center;
@@ -46,10 +49,9 @@ export const DetailsPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(1);
     document.body.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: "instant",
     });
   }, [params.id]);
 
@@ -64,7 +66,7 @@ export const DetailsPage: React.FC = () => {
   return (
     <StyledContainer>
       <Container>
-        <div>
+        <div className="top">
           <div className="img-container">
             {data && !isLoading && (
               <div className="image-wrapper">

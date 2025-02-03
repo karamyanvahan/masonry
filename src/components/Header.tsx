@@ -4,18 +4,17 @@ import { AiOutlineHome } from "react-icons/ai";
 import styled from "styled-components";
 
 const StyledHeader = styled.header`
-  background-color: White;
+  background-color: #fff;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
   width: 100vw;
-  padding: 10px;
-  padding-right: 30px;
+  padding: 2px 30px 2px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  box-shadow: 0 0 1px #2f2f2f;
   a {
     color: ${({ theme }) => theme.default};
   }
