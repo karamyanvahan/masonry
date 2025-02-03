@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { Image } from "components/Image";
 import { Masonry } from "components/Masonry";
 import { Loader } from "components/Loader";
+import { Container } from "components/Container";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -61,40 +62,42 @@ export const DetailsPage: React.FC = () => {
   }
 
   return (
-    <StyledContainer>
-      <div className="left">
-        <Link to={"/?" + searchParams.toString()}>
-          <AiOutlineArrowLeft size="40px" />
-        </Link>
-        {data && !isLoading && (
-          <div className="image-wrapper">
-            <Image
-              fetchPriority="high"
-              src={data.src?.large2x}
-              alt={data.alt}
-              width={data.width}
-              height={data.height}
-              placeholderColor={data.avg_color}
-            />
-          </div>
-        )}
-        {isLoading && <Loader />}
-      </div>
-      <div className="right">
-        <div className="info">
-          {!isLoading && (
-            <>
-              <h1>{data?.alt}</h1>
-              <h3>{data?.photographer}</h3>
-            </>
+    <Container>
+      <StyledContainer>
+        <div className="left">
+          <Link to={"/?" + searchParams.toString()}>
+            <AiOutlineArrowLeft size="40px" />
+          </Link>
+          {data && !isLoading && (
+            <div className="image-wrapper">
+              <Image
+                fetchPriority="high"
+                src={data.src?.large2x}
+                alt={data.alt}
+                width={data.width}
+                height={data.height}
+                placeholderColor={data.avg_color}
+              />
+            </div>
           )}
+          {isLoading && <Loader />}
         </div>
-        <Masonry
-          className="grid"
-          selfScroll
-          searchQuery={searchParams.get("q") ?? ""}
-        />
-      </div>
-    </StyledContainer>
+        <div className="right">
+          <div className="info">
+            {!isLoading && (
+              <>
+                <h1>{data?.alt}</h1>
+                <h3>{data?.photographer}</h3>
+              </>
+            )}
+          </div>
+          <Masonry
+            className="grid"
+            selfScroll
+            searchQuery={searchParams.get("q") ?? ""}
+          />
+        </div>
+      </StyledContainer>
+    </Container>
   );
 };

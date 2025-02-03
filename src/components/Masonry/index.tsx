@@ -17,6 +17,7 @@ const StyledMasonryContainer = styled.div<{
 }>`
   overflow-y: scroll;
   height: ${(props) => props.height ?? "100%"};
+  padding-inline: 16px;
 
   .photos-container {
     display: flex;
@@ -51,12 +52,12 @@ export const Masonry: React.FC<{
   const colWidth = 180;
   const intersectionEl = useRef<HTMLDivElement>(null);
   const containerEl = useRef<HTMLDivElement>(null);
-  const rowData = useRef<PexelsPhotoResponse[]>([]);
-  const heights = useRef<number[]>([]);
-  const [colCount, setColCount] = useState<number>(0);
+  const rawData = useRef<PexelsPhotoResponse[]>([]);
+  const heights = useRef<number[] | null>(null);
   const [data, setData] = useState<DataItem[][]>([]);
   const [virtualizedData, setVirtualizedData] = useState<DataItem[][]>([]);
   const [page, setPage] = useState(0);
+
   const {
     data: response,
     isLoading,
@@ -69,44 +70,43 @@ export const Masonry: React.FC<{
     skip: page === 0,
   });
 
-  const normalizeData = useCallback(
-    (data: PexelsPhotoResponse[]) => {
-      if (colCount === 0) {
-        return [];
-      }
-      const gap = 16;
-      const itemWidth =
-        ((containerEl.current?.clientWidth ?? 0) - (colCount - 1) * gap) /
-        colCount;
-      const result: DataItem[][] = [];
+  const normalizeData = useCallback((data: PexelsPhotoResponse[]) => {
+    const colCount = Math.max(
+      Math.floor((containerEl.current?.clientWidth ?? 0) / colWidth),
+      3
+    );
 
-      for (let i = 0; i < colCount; i++) {
-        result.push([]);
-      }
+    const result: DataItem[][] = new Array(colCount).fill(1).map(() => []);
 
-      data.forEach((photo, index) => {
-        const mostEmptyIndex = findMinIndex(heights.current);
-        const mostEmpty = result[mostEmptyIndex];
-        const itemHeight = (photo.height / photo.width) * itemWidth;
+    if (heights.current === null) {
+      heights.current = new Array(colCount).fill(0);
+    }
 
-        mostEmpty.push({
-          ...photo,
-          y: heights.current[mostEmptyIndex],
-          key: photo.id + "" + index,
-        });
-        heights.current[mostEmptyIndex] += itemHeight + gap;
+    const gap = 16;
+    const itemWidth =
+      ((containerEl.current?.clientWidth ?? 0) - (colCount + 1) * gap) /
+      colCount;
+
+    data.forEach((photo, index) => {
+      const mostEmptyIndex = findMinIndex(heights.current!);
+      const mostEmpty = result[mostEmptyIndex];
+      const itemHeight = (photo.height / photo.width) * itemWidth;
+      mostEmpty.push({
+        ...photo,
+        y: heights.current![mostEmptyIndex],
+        key: photo.id + "" + index,
       });
+      heights.current![mostEmptyIndex] += itemHeight + gap;
+    });
 
-      return result;
-    },
-    [colCount]
-  );
+    return result;
+  }, []);
 
   useEffect(() => {
     if (!response) {
       return;
     }
-    rowData.current.push(...response.photos);
+    rawData.current.push(...response.photos);
     const normalizedResponse = normalizeData(response.photos);
 
     setData((prev) => {
@@ -115,13 +115,12 @@ export const Masonry: React.FC<{
       }
       return prev.map((col, i) => col.concat(normalizedResponse[i]));
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [response]);
+  }, [normalizeData, response]);
 
   useEffect(() => {
-    heights.current = heights.current.map(() => 0);
+    heights.current = null;
     setData([]);
-    rowData.current = [];
+    rawData.current = [];
     setPage(0);
   }, [searchQuery]);
 
@@ -129,21 +128,16 @@ export const Masonry: React.FC<{
     if (!containerEl.current) {
       return;
     }
-    setColCount(
-      Math.max(Math.floor(containerEl.current.clientWidth / colWidth), 3)
-    );
+
     let toId: number | null = null;
-    const resizeObserver = new ResizeObserver((entries) => {
+    const resizeObserver = new ResizeObserver(() => {
       if (toId) {
         clearTimeout(toId);
       }
+      heights.current = null;
       toId = setTimeout(() => {
-        setColCount(
-          Math.max(
-            Math.floor(entries[0].contentBoxSize[0].inlineSize / colWidth),
-            3
-          )
-        );
+        heights.current = null;
+        setData(normalizeData(rawData.current));
       }, 200);
     });
 
@@ -152,12 +146,7 @@ export const Masonry: React.FC<{
     return () => {
       resizeObserver.disconnect();
     };
-  }, []);
-
-  useEffect(() => {
-    heights.current = new Array(colCount).fill(0);
-    setData(normalizeData(rowData.current));
-  }, [colCount]);
+  }, [normalizeData]);
 
   useEffect(() => {
     let timeoutId = 0;
@@ -174,7 +163,7 @@ export const Masonry: React.FC<{
         if (entries[0].isIntersecting) {
           timeoutId = setTimeout(() => {
             setPage((prev) => prev + 1);
-          }, 100);
+          });
         } else {
           clearTimeout(timeoutId);
         }
@@ -223,7 +212,7 @@ export const Masonry: React.FC<{
     <StyledMasonryContainer
       className={className}
       height={height}
-      imageContainerHeight={Math.max(...heights.current)}
+      imageContainerHeight={Math.max(...(heights.current ?? [0]))}
       ref={containerEl}
     >
       <div className="photos-container">
