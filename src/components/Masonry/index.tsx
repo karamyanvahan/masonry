@@ -3,13 +3,11 @@ import { usePhotos } from "hooks/photos";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { findMinIndex } from "utils";
-import { MasonryItem } from "./MasonryItem";
 import React from "react";
 import { Loader } from "components/Loader";
 import { Button } from "components/Button";
 import { Text } from "components/Text";
-
-type DataItem = PexelsPhotoResponse & { y: number; key: string };
+import { GridData, VirtualizedGrid } from "./VirtualizedGrid";
 
 const StyledMasonryContainer = styled.div<{
   height?: string;
@@ -54,8 +52,7 @@ export const Masonry: React.FC<{
   const containerEl = useRef<HTMLDivElement>(null);
   const rawData = useRef<PexelsPhotoResponse[]>([]);
   const heights = useRef<number[] | null>(null);
-  const [data, setData] = useState<DataItem[][]>([]);
-  const [virtualizedData, setVirtualizedData] = useState<DataItem[][]>([]);
+  const [data, setData] = useState<GridData>([]);
   const [page, setPage] = useState(0);
 
   const {
@@ -76,7 +73,7 @@ export const Masonry: React.FC<{
       3
     );
 
-    const result: DataItem[][] = new Array(colCount).fill(1).map(() => []);
+    const result: GridData = new Array(colCount).fill(1).map(() => []);
 
     if (heights.current === null) {
       heights.current = new Array(colCount).fill(0);
@@ -181,33 +178,6 @@ export const Masonry: React.FC<{
     };
   }, [error, isLoading, page, response, selfScroll]);
 
-  useEffect(() => {
-    const container = containerEl.current;
-    if (!container) {
-      return;
-    }
-
-    const updateVirtualizedData = () => {
-      const result = data.map((row) =>
-        row.filter(
-          (item) =>
-            item.y > container.scrollTop - 1000 &&
-            item.y < container.scrollTop + container.clientHeight + 1000
-        )
-      );
-
-      setVirtualizedData(result);
-    };
-
-    updateVirtualizedData();
-
-    container.addEventListener("scroll", updateVirtualizedData);
-
-    return () => {
-      container.removeEventListener("scroll", updateVirtualizedData);
-    };
-  }, [data]);
-
   return (
     <StyledMasonryContainer
       className={className}
@@ -215,15 +185,7 @@ export const Masonry: React.FC<{
       imageContainerHeight={Math.max(...(heights.current ?? [0]))}
       ref={containerEl}
     >
-      <div className="photos-container">
-        {virtualizedData.map((photos, i) => (
-          <div key={i} className="row">
-            {photos.map((photo) => (
-              <MasonryItem y={photo.y} photo={photo} key={photo.key} />
-            ))}
-          </div>
-        ))}
-      </div>
+      <VirtualizedGrid data={data} container={containerEl} />
       <div ref={intersectionEl}></div>
       <div className="bottom">
         {isLoading && <Loader />}
