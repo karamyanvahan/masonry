@@ -3,6 +3,7 @@ import { Image } from "components/Image";
 import React from "react";
 import { Link } from "react-router";
 import styled from "styled-components";
+import { DataItem } from "./VirtualizedGrid";
 
 const StyledMasonryGridItem = styled.div`
   position: absolute;
@@ -16,12 +17,11 @@ const StyledMasonryGridItem = styled.div`
 `;
 
 export const MasonryItem: React.FC<{
-  photo: PexelsPhotoResponse;
-  y: number;
-}> = ({ photo, y }) => {
+  photo: DataItem;
+}> = ({ photo }) => {
   return (
     <Link to={"/" + photo.id + window.location.search}>
-      <StyledMasonryGridItem style={{ top: y }}>
+      <StyledMasonryGridItem style={{ top: photo.y }}>
         <Image
           loading="lazy"
           width={photo.width}

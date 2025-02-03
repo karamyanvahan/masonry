@@ -3,9 +3,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { MasonryItem } from "./MasonryItem";
 import React from "react";
 
-type DataItem = PexelsPhotoResponse & { y: number; key: string };
-type Direction = "top" | "mid" | "bottom";
+export type DataItem = PexelsPhotoResponse & { y: number; key: string };
 export type GridData = DataItem[][];
+type Direction = "top" | "mid" | "bottom";
 
 interface VirtualizedGridProps {
   data: GridData;
