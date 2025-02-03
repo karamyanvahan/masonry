@@ -48,7 +48,7 @@ export const Loader = () => {
   useEffect(() => {
     const to = setTimeout(() => {
       setVisible(true);
-    }, 300);
+    }, 100);
 
     return () => {
       clearTimeout(to);

@@ -1,5 +1,4 @@
 import { Masonry } from "components/Masonry";
-import { Search } from "components/Search";
 import { useSearchParams } from "react-router";
 import styled from "styled-components";
 
@@ -10,11 +9,10 @@ const StyledPage = styled.div`
 `;
 
 export const HomePage: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   return (
     <StyledPage>
-      <Search onSearch={(q) => setSearchParams({ q: q })} />
       <div className="grid-container">
         <Masonry searchQuery={searchParams.get("q") || ""} />
       </div>

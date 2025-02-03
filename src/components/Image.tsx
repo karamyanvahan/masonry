@@ -1,16 +1,26 @@
 import { ImgHTMLAttributes, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
-  placeholderColor?: string;
-  width: number;
-  height: number;
+type ImageProps = ImgHTMLAttributes<HTMLImageElement> &
+  StyledContainerProps & {
+    placeholderColor?: string;
+    width: number;
+    height: number;
+  };
+
+interface StyledContainerProps {
+  isLoading?: boolean;
+  fullWidth?: boolean;
+  fullHeight?: boolean;
 }
 
-const StyledContainer = styled.div<{ $isLoading: boolean }>`
+const StyledContainer = styled.div<StyledContainerProps>`
   position: relative;
+  width: ${({ fullWidth }) => (fullWidth ? "100%" : "auto")};
+  height: ${({ fullHeight }) => (fullHeight ? "100%" : "auto")};
   img {
-    width: 100%;
+    width: ${({ fullWidth }) => (fullWidth ? "100%" : "auto")};
+    height: ${({ fullHeight }) => (fullHeight ? "100%" : "auto")};
   }
 
   .placeholder {
@@ -21,7 +31,7 @@ const StyledContainer = styled.div<{ $isLoading: boolean }>`
     width: 100%;
     height: 100%;
     transition: opacity 0.2s;
-    opacity: ${(props) => (props.$isLoading ? 1 : 0)};
+    opacity: ${(props) => (props.isLoading ? 1 : 0)};
   }
 `;
 
@@ -32,6 +42,8 @@ export const Image: React.FC<ImageProps> = ({
   className,
   style,
   src,
+  fullHeight,
+  fullWidth,
   ...imageProps
 }) => {
   const imageEl = useRef<HTMLImageElement>(null);
@@ -41,15 +53,18 @@ export const Image: React.FC<ImageProps> = ({
   const [imageSrc, setImageSrc] = useState(src);
 
   const [height, setHeight] = useState(0);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    const setPlaceholderHeight = () => {
-      if (imageEl.current?.clientWidth) {
-        setHeight((imageEl.current.clientWidth / outerWidth) * outerHeight);
-      }
-    };
-    setPlaceholderHeight();
-  }, [outerHeight, outerWidth]);
+    console.log(imageEl.current?.clientWidth);
+    if (fullWidth && imageEl.current?.clientWidth) {
+      setHeight((imageEl.current.clientWidth / outerWidth) * outerHeight);
+    }
+
+    if (fullHeight && imageEl.current?.clientHeight) {
+      setWidth((imageEl.current.clientHeight / outerHeight) * outerWidth);
+    }
+  }, [fullHeight, fullWidth, outerHeight, outerWidth]);
 
   useEffect(() => {
     if (!hasError) {
@@ -78,8 +93,14 @@ export const Image: React.FC<ImageProps> = ({
 
   return (
     <StyledContainer
-      $isLoading={isLoading}
-      style={{ height: isLoading ? height : undefined, ...style }}
+      isLoading={isLoading}
+      fullHeight={fullHeight}
+      fullWidth={fullWidth}
+      style={{
+        ...style,
+        height: isLoading && fullWidth ? height : undefined,
+        width: isLoading && fullHeight ? width : undefined,
+      }}
       className={className}
     >
       <div

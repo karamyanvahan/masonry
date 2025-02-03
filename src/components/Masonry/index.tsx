@@ -21,6 +21,7 @@ const StyledMasonryContainer = styled.div<{
     flex-direction: column;
     align-items: center;
     gap: 14px;
+    padding-top: 10px;
     height: 100px;
   }
 

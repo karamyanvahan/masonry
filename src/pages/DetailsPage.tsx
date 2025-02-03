@@ -1,48 +1,40 @@
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import styled from "styled-components";
 import { usePhoto } from "hooks/photos";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { Image } from "components/Image";
-import { Masonry } from "components/Masonry";
 import { Loader } from "components/Loader";
 import { Container } from "components/Container";
+import { Masonry } from "components/Masonry";
+import { useEffect } from "react";
 
 const StyledContainer = styled.div`
-  display: flex;
-  align-items: start;
-  gap: 16px;
-
-  .left {
-    flex: 1;
-    padding-top: 10px;
-    .image-wrapper {
-      border-radius: 14px;
-      overflow: hidden;
-    }
+  .img-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 200px);
+  }
+  .image-wrapper {
+    width: max-content;
+    border-radius: 14px;
+    overflow: hidden;
+    height: calc(100vh - 200px);
   }
 
-  .right {
-    flex: 2;
+  .info {
+    text-align: center;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    justify-content: space-between;
-    height: 100vh;
+    gap: 10px;
+  }
 
-    .info {
-      height: 100px;
-    }
+  h3 {
+    color: ${(props) => props.theme.default};
+  }
 
-    .grid {
-      flex: 1;
-    }
-    h1 {
-      font-size: 2em;
-    }
-
-    h3 {
-      font-size: 1.2em;
-    }
+  .masonry-container {
+    margin-top: 20px;
   }
 `;
 
@@ -53,6 +45,14 @@ export const DetailsPage: React.FC = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log(1);
+    document.body.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [params.id]);
+
   if (error) {
     if (error.status === 404) {
       navigate("/not-found", { replace: true });
@@ -62,42 +62,44 @@ export const DetailsPage: React.FC = () => {
   }
 
   return (
-    <Container>
-      <StyledContainer>
-        <div className="left">
-          <Link to={"/?" + searchParams.toString()}>
-            <AiOutlineArrowLeft size="40px" />
-          </Link>
-          {data && !isLoading && (
-            <div className="image-wrapper">
-              <Image
-                fetchPriority="high"
-                src={data.src?.large2x}
-                alt={data.alt}
-                width={data.width}
-                height={data.height}
-                placeholderColor={data.avg_color}
-              />
-            </div>
-          )}
-          {isLoading && <Loader />}
-        </div>
-        <div className="right">
+    <StyledContainer>
+      <Container>
+        <div>
+          <div className="img-container">
+            {data && !isLoading && (
+              <div className="image-wrapper">
+                <Image
+                  fullHeight
+                  fetchPriority="high"
+                  src={data.src?.large2x}
+                  alt={data.alt}
+                  width={data.width}
+                  height={data.height}
+                  placeholderColor={data.avg_color}
+                />
+              </div>
+            )}
+            {isLoading && <Loader />}
+          </div>
           <div className="info">
             {!isLoading && (
               <>
                 <h1>{data?.alt}</h1>
-                <h3>{data?.photographer}</h3>
+                <a href={data?.photographer_url} target="_blank">
+                  <h3>{data?.photographer}</h3>
+                </a>
               </>
             )}
           </div>
-          <Masonry
-            className="grid"
-            selfScroll
-            searchQuery={searchParams.get("q") ?? ""}
-          />
         </div>
-      </StyledContainer>
-    </Container>
+      </Container>
+      <div className="masonry-container">
+        <Masonry
+          height="calc(100vh - 90px)"
+          className="grid"
+          searchQuery={searchParams.get("q") ?? ""}
+        />
+      </div>
+    </StyledContainer>
   );
 };

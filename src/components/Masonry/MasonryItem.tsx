@@ -1,4 +1,3 @@
-import { PexelsPhotoResponse } from "api/types";
 import { Image } from "components/Image";
 import React from "react";
 import { Link } from "react-router";
@@ -23,6 +22,7 @@ export const MasonryItem: React.FC<{
     <Link to={"/" + photo.id + window.location.search}>
       <StyledMasonryGridItem style={{ top: photo.y }}>
         <Image
+          fullWidth
           loading="lazy"
           width={photo.width}
           height={photo.height}
