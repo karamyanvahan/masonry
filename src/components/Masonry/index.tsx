@@ -33,9 +33,8 @@ const StyledMasonryContainer = styled.div<{
 export const Masonry: React.FC<{
   className?: string;
   height?: string;
-  selfScroll?: boolean;
   searchQuery?: string;
-}> = ({ className, height, selfScroll, searchQuery }) => {
+}> = ({ className, height, searchQuery }) => {
   const perPage = 40;
   const colWidth = 180;
   const intersectionEl = useRef<HTMLDivElement>(null);
@@ -156,7 +155,7 @@ export const Masonry: React.FC<{
         }
       },
       {
-        root: selfScroll ? containerEl.current : undefined,
+        root: containerEl.current,
         rootMargin: "500px",
       }
     );
@@ -166,7 +165,7 @@ export const Masonry: React.FC<{
     return () => {
       intersectionObserver.disconnect();
     };
-  }, [error, isLoading, page, response, selfScroll]);
+  }, [error, isLoading, page, response]);
 
   return (
     <StyledMasonryContainer

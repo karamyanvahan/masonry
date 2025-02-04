@@ -23,7 +23,6 @@ export const MasonryItem: React.FC<{
       <StyledMasonryGridItem style={{ top: photo.y }}>
         <Image
           fullWidth
-          loading="lazy"
           width={photo.width}
           height={photo.height}
           src={photo.src?.medium}

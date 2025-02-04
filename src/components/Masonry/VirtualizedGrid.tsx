@@ -110,3 +110,5 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
     );
   }
 );
+
+VirtualizedGrid.displayName = "VirtualizedGrid";

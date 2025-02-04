@@ -56,7 +56,6 @@ export const Image: React.FC<ImageProps> = ({
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    console.log(imageEl.current?.clientWidth);
     if (fullWidth && imageEl.current?.clientWidth) {
       setHeight((imageEl.current.clientWidth / outerWidth) * outerHeight);
     }
