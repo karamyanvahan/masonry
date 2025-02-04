@@ -56,6 +56,14 @@ export const Masonry: React.FC<{
     skip: page === 0,
   });
 
+  const reset = () => {
+    heights.current = null;
+    setData([]);
+    rawData.current = [];
+    setPage(0);
+  };
+
+  //normalize data for displaying as masonry grid
   const normalizeData = useCallback((data: PexelsPhotoResponse[]) => {
     const colCount = Math.max(
       Math.floor((containerEl.current?.clientWidth ?? 0) / colWidth),
@@ -88,6 +96,7 @@ export const Masonry: React.FC<{
     return result;
   }, []);
 
+  //when getting new images normalize response and concat it with previous data
   useEffect(() => {
     if (!response) {
       return;
@@ -103,13 +112,12 @@ export const Masonry: React.FC<{
     });
   }, [normalizeData, response]);
 
+  //on search reset grid
   useEffect(() => {
-    heights.current = null;
-    setData([]);
-    rawData.current = [];
-    setPage(0);
+    reset();
   }, [searchQuery]);
 
+  //adjust grid when resizing
   useEffect(() => {
     if (!containerEl.current) {
       return;
@@ -134,6 +142,7 @@ export const Masonry: React.FC<{
     };
   }, [normalizeData]);
 
+  //implement infinite scroll
   useEffect(() => {
     let timeoutId = 0;
     const intersectionObserver = new IntersectionObserver(

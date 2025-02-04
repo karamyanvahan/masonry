@@ -29,6 +29,8 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
     const lastScrollPosDelayed = useRef(0);
     const [virtualizedData, setVirtualizedData] = useState<GridData>([]);
 
+    //get data that needs to be rendered depending on viewport position and scroll direction
+    //depending on scroll position different count of elements will be rendered before or after viewport position
     const updateVirtualizedData = useCallback(
       (dir: "top" | "bottom" | "mid") => {
         if (!containerRef.current) {
@@ -49,6 +51,7 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
           deltaBottom = 500;
         }
 
+        //this could be optimized by taking in count that the elements y position by which we filter them is sorted
         const result = data.map((row) =>
           row.filter(
             (item) =>
@@ -68,6 +71,7 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
       updateVirtualizedData("bottom");
     }, [updateVirtualizedData]);
 
+    //update virtualized data on scroll
     useEffect(() => {
       const container = containerRef.current;
       if (!container) {
@@ -111,4 +115,5 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
   }
 );
 
+//display name for react dev tools
 VirtualizedGrid.displayName = "VirtualizedGrid";

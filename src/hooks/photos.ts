@@ -2,6 +2,7 @@ import { fetchPhoto, fetchPhotos, HttpError } from "api";
 import { PexelsPhotoResponse, PexelsResponse } from "api/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+// This hook is used to fetch photos from the Pexels API.
 export const usePhotos = ({
   page,
   perPage,

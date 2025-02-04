@@ -37,6 +37,7 @@ const StyledContainer = styled.div<StyledContainerProps>`
   }
 `;
 
+// Image component that shows a placeholder while the image is loading and retries loading the image if it fails
 export const Image: React.FC<ImageProps> = ({
   placeholderColor,
   height: outerHeight,

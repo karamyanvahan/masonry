@@ -45,6 +45,7 @@ const StyledLoader = styled.div`
 export const Loader = () => {
   const [visible, setVisible] = useState(false);
 
+  // show loader after 100ms for better UX
   useEffect(() => {
     const to = setTimeout(() => {
       setVisible(true);
