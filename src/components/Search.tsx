@@ -82,7 +82,7 @@ export const Search: React.FC<{ onSearch: (q: string) => void }> = ({
             placeholder="Search"
             ref={inputRef}
           />
-          <button className="search__button" type="submit">
+          <button aria-label="search" className="search__button" type="submit">
             <svg
               className="search__icon"
               aria-hidden="true"

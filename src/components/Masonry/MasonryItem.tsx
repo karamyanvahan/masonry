@@ -13,14 +13,23 @@ const StyledMasonryGridItem = styled.div`
   img {
     width: 100%;
   }
+
+  &:focus-within {
+    display: block;
+    border: 3px solid #0b79a6;
+    border-radius: 14px;
+  }
 `;
 
 export const MasonryItem: React.FC<{
   photo: DataItem;
 }> = ({ photo }) => {
   return (
-    <Link to={"/" + photo.id + window.location.search}>
-      <StyledMasonryGridItem style={{ top: photo.y }}>
+    <StyledMasonryGridItem style={{ top: photo.y }}>
+      <Link
+        to={"/" + photo.id + window.location.search}
+        aria-label={photo.alt || "untitled photo"}
+      >
         <Image
           fullWidth
           width={photo.width}
@@ -30,7 +39,7 @@ export const MasonryItem: React.FC<{
           alt={photo.alt}
           placeholderColor={photo.avg_color}
         />
-      </StyledMasonryGridItem>
-    </Link>
+      </Link>
+    </StyledMasonryGridItem>
   );
 };

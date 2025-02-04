@@ -25,7 +25,7 @@ export const SomethingWentWrongPage: React.FC = () => {
     <StyledContainer>
       <Text tag="h1">Something went wrong</Text>
       <Link to="/">
-        <Button>Go to home page</Button>
+        <Button aria-label="Go to home page">Go to home page</Button>
       </Link>
     </StyledContainer>
   );

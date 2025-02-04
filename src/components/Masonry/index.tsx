@@ -189,6 +189,7 @@ export const Masonry: React.FC<{
           <>
             <Text variant="error">Failed to fetch</Text>
             <Button
+              aria-label="Try again"
               variant="error"
               type="button"
               onClick={() => {

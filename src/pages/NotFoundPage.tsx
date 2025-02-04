@@ -25,7 +25,7 @@ export const NotFoundPage: React.FC = () => {
       <Text tag="h1">404</Text>
       <Text>Not Found</Text>
       <Link to="/">
-        <Button>Go to home page</Button>
+        <Button aria-label="Go to home page">Go to home page</Button>
       </Link>
     </StyledContainer>
   );
