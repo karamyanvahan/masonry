@@ -115,6 +115,8 @@ export const Image: React.FC<ImageProps> = ({
       <picture>
         {smallSrc && <source media="(max-width: 400px)" srcSet={smallSrc} />}
         <img
+          width={width}
+          height={height}
           ref={imageEl}
           {...imageProps}
           src={imageSrc}
