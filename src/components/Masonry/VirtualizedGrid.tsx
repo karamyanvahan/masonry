@@ -41,14 +41,14 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
         let deltaBottom = 0;
 
         if (dir === "top") {
-          deltaTop = 1000;
-          deltaBottom = 100;
-        } else if (dir === "bottom") {
-          deltaTop = 300;
+          deltaTop = 2000;
           deltaBottom = 1000;
+        } else if (dir === "bottom") {
+          deltaTop = 1000;
+          deltaBottom = 2000;
         } else if (dir === "mid") {
-          deltaTop = 500;
-          deltaBottom = 500;
+          deltaTop = 1000;
+          deltaBottom = 1000;
         }
 
         //this could be optimized by taking in count that the elements y position by which we filter them is sorted
