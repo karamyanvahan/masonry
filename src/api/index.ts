@@ -29,7 +29,7 @@ const appFetch = (url: string, options?: RequestInit) => {
 export const fetchPhotos = ({ page, perPage, search }: FetchPhotosParams) => {
   const searchParams = new URLSearchParams({
     page: page?.toString() ?? "1",
-    per_page: perPage?.toString() ?? "30",
+    per_page: perPage?.toString() ?? "80",
   });
 
   if (search) {

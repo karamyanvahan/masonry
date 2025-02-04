@@ -26,6 +26,7 @@ export const MasonryItem: React.FC<{
           width={photo.width}
           height={photo.height}
           src={photo.src?.medium}
+          smallSrc={photo.src?.small}
           alt={photo.alt}
           placeholderColor={photo.avg_color}
         />

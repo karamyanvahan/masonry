@@ -74,6 +74,7 @@ export const DetailsPage: React.FC = () => {
                   fullHeight
                   fetchPriority="high"
                   src={data.src?.large2x}
+                  smallSrc={data.src?.large}
                   alt={data.alt}
                   width={data.width}
                   height={data.height}

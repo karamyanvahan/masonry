@@ -6,6 +6,7 @@ type ImageProps = ImgHTMLAttributes<HTMLImageElement> &
     placeholderColor?: string;
     width: number;
     height: number;
+    smallSrc?: string;
   };
 
 interface StyledContainerProps {
@@ -18,6 +19,7 @@ const StyledContainer = styled.div<StyledContainerProps>`
   position: relative;
   width: ${({ fullWidth }) => (fullWidth ? "100%" : "auto")};
   height: ${({ fullHeight }) => (fullHeight ? "100%" : "auto")};
+
   img {
     width: ${({ fullWidth }) => (fullWidth ? "100%" : "auto")};
     height: ${({ fullHeight }) => (fullHeight ? "100%" : "auto")};
@@ -44,6 +46,7 @@ export const Image: React.FC<ImageProps> = ({
   src,
   fullHeight,
   fullWidth,
+  smallSrc,
   ...imageProps
 }) => {
   const imageEl = useRef<HTMLImageElement>(null);
@@ -108,18 +111,21 @@ export const Image: React.FC<ImageProps> = ({
           backgroundColor: placeholderColor,
         }}
       ></div>
-      <img
-        ref={imageEl}
-        {...imageProps}
-        src={imageSrc}
-        onLoad={() => {
-          setHasError(false);
-          setIsLoading(false);
-        }}
-        onError={() => {
-          setHasError(true);
-        }}
-      />
+      <picture>
+        {smallSrc && <source media="(max-width: 400px)" srcSet={smallSrc} />}
+        <img
+          ref={imageEl}
+          {...imageProps}
+          src={imageSrc}
+          onLoad={() => {
+            setHasError(false);
+            setIsLoading(false);
+          }}
+          onError={() => {
+            setHasError(true);
+          }}
+        />
+      </picture>
     </StyledContainer>
   );
 };
