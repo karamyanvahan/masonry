@@ -11,3 +11,20 @@ export const findMinIndex = (arr: number[]) => {
 
   return minIndex;
 };
+
+export const getResizedImageUrl = (
+  url: string,
+  { width, height }: { width?: number; height?: number }
+) => {
+  let result = url + "?auto=compress&cs=tinysrgb";
+
+  if (width) {
+    result += `&w=${width}`;
+  }
+
+  if (height) {
+    result += `&h=${height}}`;
+  }
+
+  return result;
+};

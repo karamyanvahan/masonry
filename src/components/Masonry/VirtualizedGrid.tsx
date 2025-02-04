@@ -4,7 +4,12 @@ import { MasonryItem } from "./MasonryItem";
 import React from "react";
 import styled from "styled-components";
 
-export type DataItem = PexelsPhotoResponse & { y: number; key: string };
+export type DataItem = Omit<PexelsPhotoResponse, "src"> & {
+  y: number;
+  key: string;
+  src: string;
+  smallSrc: string;
+};
 export type GridData = DataItem[][];
 type Direction = "top" | "mid" | "bottom";
 

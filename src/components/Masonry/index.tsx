@@ -2,7 +2,7 @@ import { PexelsPhotoResponse } from "api/types";
 import { usePhotos } from "hooks/photos";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { findMinIndex } from "utils";
+import { findMinIndex, getResizedImageUrl } from "utils";
 import React from "react";
 import { Loader } from "components/Loader";
 import { Button } from "components/Button";
@@ -88,6 +88,8 @@ export const Masonry: React.FC<{
         ...photo,
         y: heights.current![mostEmptyIndex],
         key: photo.id + "" + index,
+        src: getResizedImageUrl(photo.src.original, { width: colWidth }),
+        smallSrc: getResizedImageUrl(photo.src.original, { width: 133 }),
       });
       heights.current![mostEmptyIndex] += itemHeight + gap;
     });
