@@ -99,7 +99,6 @@ export const DetailsPage: React.FC = () => {
       <div className="masonry-container">
         <Masonry
           height="calc(100vh - 90px)"
-          className="grid"
           searchQuery={searchParams.get("q") ?? ""}
         />
       </div>

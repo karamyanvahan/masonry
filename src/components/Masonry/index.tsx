@@ -31,12 +31,11 @@ const StyledMasonryContainer = styled.div<{
 `;
 
 export const Masonry: React.FC<{
-  className?: string;
   height?: string;
   searchQuery?: string;
-}> = ({ className, height, searchQuery }) => {
+}> = ({ height, searchQuery }) => {
   const perPage = 40;
-  const colWidth = 180;
+  const colWidth = 240;
   const intersectionEl = useRef<HTMLDivElement>(null);
   const containerEl = useRef<HTMLDivElement>(null);
   const rawData = useRef<PexelsPhotoResponse[]>([]);
@@ -177,11 +176,7 @@ export const Masonry: React.FC<{
   }, [error, isLoading, page, response]);
 
   return (
-    <StyledMasonryContainer
-      className={className}
-      height={height}
-      ref={containerEl}
-    >
+    <StyledMasonryContainer height={height} ref={containerEl}>
       <VirtualizedGrid
         height={Math.max(...(heights.current ?? [0]))}
         data={data}
