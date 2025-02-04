@@ -40,7 +40,10 @@ export const Header: React.FC = () => {
   return (
     <StyledHeader>
       <Container>
-        <HomeLink to={"/?" + searchParams.toString()}>
+        <HomeLink
+          aria-label="Go to home page"
+          to={"/?" + searchParams.toString()}
+        >
           <RiLayoutMasonryLine size="40px" />
         </HomeLink>
         <Search onSearch={onSearch} />
