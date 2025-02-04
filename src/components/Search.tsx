@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import styled from "styled-components";
 
 const StyledSearch = styled.div`
@@ -34,22 +35,35 @@ const StyledSearch = styled.div`
   }
 `;
 
-export const Search: React.FC<{ onSearch: (q: string) => void }> = ({
-  onSearch,
-}) => {
+export const Search: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [value, setValue] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const onSearch = (q: string) => {
+    navigate("/?q=" + q, {
+      preventScrollReset: true,
+    });
+  };
+
+  useEffect(() => {
+    setValue(searchParams.get("q") ?? "");
+  }, [searchParams]);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onSearch(inputRef.current?.value || "");
+        onSearch(value);
         inputRef.current?.blur();
       }}
     >
       <StyledSearch>
         <div className="search">
           <input
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
             type="search"
             inputMode="search"
             className="search__input"

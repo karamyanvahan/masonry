@@ -1,5 +1,5 @@
 import { Search } from "./Search";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { RiLayoutMasonryLine } from "react-icons/ri";
 import styled from "styled-components";
 import { Container } from "./Container";
@@ -28,13 +28,7 @@ const HomeLink = styled(Link)`
 `;
 
 export const Header: React.FC = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const onSearch = (q: string) => {
-    navigate("/?q=" + q, {
-      preventScrollReset: true,
-    });
-  };
 
   return (
     <StyledHeader>
@@ -45,7 +39,7 @@ export const Header: React.FC = () => {
         >
           <RiLayoutMasonryLine size="40px" />
         </HomeLink>
-        <Search onSearch={onSearch} />
+        <Search />
       </Container>
     </StyledHeader>
   );
