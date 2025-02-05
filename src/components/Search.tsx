@@ -16,9 +16,10 @@ const StyledSearch = styled.div`
   .search__input {
     font-family: inherit;
     font-size: inherit;
-    background-color: #f4f2f2;
+    background-color: ${({ theme: { darkMode } }) =>
+      darkMode ? "#202020;" : "#f4f2f2;"};
     border: none;
-    color: #646464;
+    color: ${({ theme: { darkMode } }) => (darkMode ? "#dfdcdc;" : "#646464;")};
     padding: 0.7rem 1rem;
     border-radius: 30px;
     width: 200px;
@@ -26,7 +27,8 @@ const StyledSearch = styled.div`
 
   .search__input:focus {
     outline: none;
-    background-color: #f0eeee;
+    background-color: ${({ theme: { darkMode } }) =>
+      darkMode ? "#2e2e2e;" : "#f0eeee;"};
   }
 
   .search__input::-webkit-input-placeholder {
@@ -64,7 +66,6 @@ export const Search: React.FC = () => {
           <input
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            type="search"
             inputMode="search"
             className="search__input"
             placeholder="Search"
