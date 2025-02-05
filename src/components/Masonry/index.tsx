@@ -33,7 +33,7 @@ const StyledMasonryContainer = styled.div<{
 export const Masonry: React.FC<{
   height?: string;
   searchQuery?: string;
-}> = ({ height, searchQuery }) => {
+}> = React.memo(({ height, searchQuery }) => {
   const perPage = 80;
   const colWidth = 240;
   const intersectionEl = useRef<HTMLDivElement>(null);
@@ -205,4 +205,6 @@ export const Masonry: React.FC<{
       </div>
     </StyledMasonryContainer>
   );
-};
+});
+
+Masonry.displayName = "Masonry";
