@@ -5,6 +5,7 @@ import {
   useMemo,
   PropsWithChildren,
   useEffect,
+  useCallback,
 } from "react";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 
@@ -41,11 +42,14 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
     localStorage.getItem("isDarMode") === "true"
   );
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setIsDarkMode((prevMode) => !prevMode);
-  };
+  }, []);
 
-  const value = useMemo(() => ({ isDarkMode, toggleTheme }), [isDarkMode]);
+  const value = useMemo(
+    () => ({ isDarkMode, toggleTheme }),
+    [isDarkMode, toggleTheme]
+  );
 
   useEffect(() => {
     localStorage.setItem("isDarMode", isDarkMode.toString());

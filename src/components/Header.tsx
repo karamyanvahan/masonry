@@ -52,7 +52,9 @@ export const Header: React.FC = () => {
           </HomeLink>
         </div>
         <Search />
-        <ToggleTheme />
+        <div>
+          <ToggleTheme />
+        </div>
       </Container>
     </StyledHeader>
   );

@@ -34,7 +34,7 @@ export const Masonry: React.FC<{
   height?: string;
   searchQuery?: string;
 }> = ({ height, searchQuery }) => {
-  const perPage = 40;
+  const perPage = 80;
   const colWidth = 240;
   const intersectionEl = useRef<HTMLDivElement>(null);
   const containerEl = useRef<HTMLDivElement>(null);
@@ -182,7 +182,7 @@ export const Masonry: React.FC<{
       <VirtualizedGrid
         height={Math.max(...(heights.current ?? [0]))}
         data={data}
-        container={containerEl}
+        container={containerEl.current}
       />
       <div ref={intersectionEl}></div>
       <div className="bottom">

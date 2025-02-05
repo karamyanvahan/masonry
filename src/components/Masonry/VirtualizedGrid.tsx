@@ -15,7 +15,7 @@ type Direction = "top" | "mid" | "bottom";
 
 interface VirtualizedGridProps {
   data: GridData;
-  container: React.RefObject<HTMLDivElement>;
+  container: HTMLElement | null;
   height: number;
 }
 
@@ -29,7 +29,7 @@ const StyledGrid = styled.div<{ height: number }>`
   }
 `;
 export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
-  ({ data, container: containerRef, height }) => {
+  ({ data, container, height }) => {
     const scrollDir = useRef<Direction>("mid");
     const lastScrollPosDelayed = useRef(0);
     const [virtualizedData, setVirtualizedData] = useState<GridData>([]);
@@ -38,7 +38,7 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
     //depending on scroll position different count of elements will be rendered before or after viewport position
     const updateVirtualizedData = useCallback(
       (dir: "top" | "bottom" | "mid") => {
-        if (!containerRef.current) {
+        if (!container) {
           return;
         }
 
@@ -60,16 +60,14 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
         const result = data.map((row) =>
           row.filter(
             (item) =>
-              item.y > containerRef.current!.scrollTop - deltaTop &&
+              item.y > container.scrollTop - deltaTop &&
               item.y <
-                containerRef.current!.scrollTop +
-                  containerRef.current!.clientHeight +
-                  deltaBottom
+                container.scrollTop + container.clientHeight + deltaBottom
           )
         );
         setVirtualizedData(result);
       },
-      [containerRef, data]
+      [container, data]
     );
 
     useEffect(() => {
@@ -78,7 +76,6 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
 
     //update virtualized data on scroll
     useEffect(() => {
-      const container = containerRef.current;
       if (!container) {
         return;
       }
@@ -104,7 +101,7 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
       return () => {
         container.removeEventListener("scroll", onScroll);
       };
-    }, [containerRef, updateVirtualizedData]);
+    }, [container, updateVirtualizedData]);
 
     return (
       <StyledGrid height={height}>
