@@ -14,7 +14,9 @@ Mobile
 
 The only issue affecting performance is client-side rendering.
 
-### Running the application
+### Running the project
+
+To run the project clone this repository, open folder in terminal and type this commands:
 
 `npm i`
 
