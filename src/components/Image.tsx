@@ -50,6 +50,8 @@ export const Image: React.FC<ImageProps> = ({
   fullHeight,
   fullWidth,
   smallSrc,
+  onLoad,
+  fetchPriority,
   ...imageProps
 }) => {
   const imageEl = useRef<HTMLImageElement>(null);
@@ -117,14 +119,16 @@ export const Image: React.FC<ImageProps> = ({
       <picture>
         {smallSrc && <source media="(max-width: 400px)" srcSet={smallSrc} />}
         <img
+          {...imageProps}
+          fetchPriority={fetchPriority}
           width={width}
           height={height}
           ref={imageEl}
-          {...imageProps}
           src={imageSrc}
-          onLoad={() => {
+          onLoad={(e) => {
             setHasError(false);
             setIsLoading(false);
+            onLoad?.(e);
           }}
           onError={() => {
             setHasError(true);

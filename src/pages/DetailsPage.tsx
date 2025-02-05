@@ -5,23 +5,23 @@ import { Image } from "components/Image";
 import { Loader } from "components/Loader";
 import { Container } from "components/Container";
 import { Masonry } from "components/Masonry";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const StyledContainer = styled.div`
+const StyledContainer = styled.div<{ $imageAspectRatio?: number }>`
   .top {
-    min-height: calc(100vh - 90px);
-  }
-  .img-container {
+    height: calc(100vh - 90px);
+    padding-bottom: 50px;
     display: flex;
-    justify-content: center;
+    gap: 10px;
+    flex-direction: column;
     align-items: center;
-    height: calc(100vh - 200px);
+    justify-content: center;
   }
+
   .image-wrapper {
-    width: max-content;
     border-radius: 14px;
     overflow: hidden;
-    height: calc(100vh - 200px);
+    aspect-ratio: ${({ $imageAspectRatio }) => $imageAspectRatio ?? ""};
   }
 
   .info {
@@ -32,16 +32,17 @@ const StyledContainer = styled.div`
     align-items: center;
     gap: 10px;
   }
-
-  .masonry-container {
-    margin-top: 20px;
-  }
 `;
 
 export const DetailsPage: React.FC = () => {
   const params = useParams();
-  const { data, isLoading, error } = usePhoto({ id: params.id! });
+  const {
+    data,
+    isLoading: isDataLoading,
+    error,
+  } = usePhoto({ id: params.id! });
   const [searchParams] = useSearchParams();
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -50,6 +51,7 @@ export const DetailsPage: React.FC = () => {
       top: 0,
       behavior: "instant",
     });
+    setIsImageLoading(true);
   }, [params.id]);
 
   if (error) {
@@ -61,36 +63,37 @@ export const DetailsPage: React.FC = () => {
   }
 
   return (
-    <StyledContainer>
+    <StyledContainer
+      $imageAspectRatio={data ? data.width / data.height : undefined}
+    >
       <Container>
         <div className="top">
-          <div className="img-container">
-            {data && !isLoading && (
-              <div className="image-wrapper">
-                <Image
-                  fullHeight
-                  fetchPriority="high"
-                  src={data.src?.large2x}
-                  smallSrc={data.src?.large}
-                  alt={data.alt}
-                  width={data.width}
-                  height={data.height}
-                  placeholderColor={data.avg_color}
-                />
-              </div>
-            )}
-            {isLoading && <Loader />}
-          </div>
-          <div className="info">
-            {!isLoading && (
-              <>
-                <h1>{data?.alt}</h1>
-                <a href={data?.photographer_url} target="_blank">
-                  <h3>{data?.photographer}</h3>
-                </a>
-              </>
-            )}
-          </div>
+          {data && !isDataLoading && (
+            <div className="image-wrapper">
+              <Image
+                onLoad={() => setIsImageLoading(false)}
+                style={{ display: isImageLoading ? "none" : "block" }}
+                fullWidth
+                fetchPriority="high"
+                src={data.src?.large2x}
+                smallSrc={data.src?.large}
+                alt={data.alt}
+                width={data.width}
+                height={data.height}
+                placeholderColor={data.avg_color}
+              />
+            </div>
+          )}
+          {isDataLoading || isImageLoading ? (
+            <Loader />
+          ) : (
+            <div className="info">
+              <h1>{data?.alt}</h1>
+              <a href={data?.photographer_url} target="_blank">
+                <h3>{data?.photographer}</h3>
+              </a>
+            </div>
+          )}
         </div>
       </Container>
       <div className="masonry-container">
