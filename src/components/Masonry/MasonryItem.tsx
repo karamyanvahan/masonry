@@ -14,7 +14,7 @@ const StyledMasonryGridItem = styled.div`
     width: 100%;
   }
 
-  &:focus-within {
+  &:has(a:focus-visible) {
     display: block;
     border: 3px solid #0b79a6;
     border-radius: 14px;
