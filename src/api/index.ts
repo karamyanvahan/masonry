@@ -1,3 +1,4 @@
+import { env } from "env";
 import { PexelsPhotoResponse, PexelsResponse } from "./types";
 
 interface FetchPhotosParams {
@@ -5,7 +6,6 @@ interface FetchPhotosParams {
   perPage?: number;
   search?: string;
 }
-const authToken = "HiFB93lWrN5DSnjOLyu5JzH1CzY21XAuXUBjrp1vctXjmxmhOPT742r0";
 
 export class HttpError {
   constructor(public status: number) {}
@@ -15,7 +15,7 @@ const appFetch = (url: string, options?: RequestInit) => {
   return fetch("https://api.pexels.com/v1" + url, {
     ...options,
     headers: {
-      Authorization: authToken,
+      Authorization: env.apiToken,
       ...options?.headers,
     },
   }).then((response) => {
