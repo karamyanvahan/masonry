@@ -102,11 +102,10 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
         container.removeEventListener("scroll", onScroll);
       };
     }, [container, updateVirtualizedData]);
-
     return (
       <StyledGrid height={height}>
         {virtualizedData.map((photos, i) => (
-          <div key={i} className="row">
+          <div key={data[i]?.[0]?.id ?? i} className="row">
             {photos.map((photo) => (
               <MasonryItem photo={photo} key={photo.key} />
             ))}
