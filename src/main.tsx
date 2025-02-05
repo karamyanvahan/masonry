@@ -4,16 +4,11 @@ import App from "./App.tsx";
 
 import "fonts.css";
 import "main.css";
-import { ThemeProvider } from "styled-components";
-
-const theme = {
-  default: "#1a1a1a",
-  error: "rgb(221, 52, 6)",
-};
+import { ThemeProvider } from "providers/ThemeProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
       <App />
     </ThemeProvider>
   </StrictMode>

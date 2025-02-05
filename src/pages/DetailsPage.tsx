@@ -29,11 +29,8 @@ const StyledContainer = styled.div`
     margin-top: 10px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 10px;
-  }
-
-  h3 {
-    color: ${(props) => props.theme.default};
   }
 
   .masonry-container {

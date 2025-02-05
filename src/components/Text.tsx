@@ -6,7 +6,8 @@ interface StyledTextProps {
 }
 
 const StyledText = styled.p<StyledTextProps>`
-  color: ${({ theme, variant }) => theme[variant ?? "default"]};
+  color: ${({ theme, variant }) =>
+    theme[!variant || variant === "default" ? "foreground" : ""]};
 `;
 export const Text: React.FC<
   PropsWithChildren<{ tag?: string } & StyledTextProps>
