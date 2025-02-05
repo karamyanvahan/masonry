@@ -1,6 +1,6 @@
 # Virtualized Masonry grid with infinite scroll
 
-<img src="./readme-assets/video.gif" alt="drawing" style="max-width: 800px"/>
+<img src="./readme-assets/demo.gif" alt="demo" style="max-width: 800px"/>
 
 ### Lighthouse results
 
