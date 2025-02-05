@@ -68,8 +68,8 @@ export const DetailsPage: React.FC = () => {
     >
       <Container>
         <div className="top">
-          {data && !isDataLoading && (
-            <div className="image-wrapper">
+          <div className="image-wrapper">
+            {data && !isDataLoading && (
               <Image
                 onLoad={() => setIsImageLoading(false)}
                 style={{ display: isImageLoading ? "none" : "block" }}
@@ -82,8 +82,8 @@ export const DetailsPage: React.FC = () => {
                 height={data.height}
                 placeholderColor={data.avg_color}
               />
-            </div>
-          )}
+            )}
+          </div>
           {isDataLoading || isImageLoading ? (
             <Loader />
           ) : (
