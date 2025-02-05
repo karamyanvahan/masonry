@@ -1,28 +1,30 @@
 import { ImgHTMLAttributes, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-type ImageProps = ImgHTMLAttributes<HTMLImageElement> &
-  StyledContainerProps & {
-    placeholderColor?: string;
-    width: number;
-    height: number;
-    smallSrc?: string;
-  };
-
-interface StyledContainerProps {
+type ImageProps = ImgHTMLAttributes<HTMLImageElement> & {
+  placeholderColor?: string;
+  width: number;
+  height: number;
+  smallSrc?: string;
   isLoading?: boolean;
   fullWidth?: boolean;
   fullHeight?: boolean;
+};
+
+interface StyledContainerProps {
+  $isLoading?: boolean;
+  $fullWidth?: boolean;
+  $fullHeight?: boolean;
 }
 
 const StyledContainer = styled.div<StyledContainerProps>`
   position: relative;
-  width: ${({ fullWidth }) => (fullWidth ? "100%" : "auto")};
-  height: ${({ fullHeight }) => (fullHeight ? "100%" : "auto")};
+  width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "auto")};
+  height: ${({ $fullHeight }) => ($fullHeight ? "100%" : "auto")};
 
   img {
-    width: ${({ fullWidth }) => (fullWidth ? "100%" : "auto")};
-    height: ${({ fullHeight }) => (fullHeight ? "100%" : "auto")};
+    width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "auto")};
+    height: ${({ $fullHeight }) => ($fullHeight ? "100%" : "auto")};
   }
 
   .placeholder {
@@ -33,7 +35,7 @@ const StyledContainer = styled.div<StyledContainerProps>`
     width: 100%;
     height: 100%;
     transition: opacity 0.2s;
-    opacity: ${(props) => (props.isLoading ? 1 : 0)};
+    opacity: ${(props) => (props.$isLoading ? 1 : 0)};
   }
 `;
 
@@ -96,9 +98,9 @@ export const Image: React.FC<ImageProps> = ({
 
   return (
     <StyledContainer
-      isLoading={isLoading}
-      fullHeight={fullHeight}
-      fullWidth={fullWidth}
+      $isLoading={isLoading}
+      $fullHeight={fullHeight}
+      $fullWidth={fullWidth}
       style={{
         ...style,
         height: isLoading && fullWidth ? height : undefined,
