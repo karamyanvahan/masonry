@@ -11,3 +11,13 @@ Desktop
 Mobile
 
 ![](/readme-assets/lighthouse-mobile.png)
+
+The only issue affecting performance is client-side rendering.
+
+### Running the application
+
+`npm i`
+
+`npm run build`
+
+`npx serve -s ./dist`
