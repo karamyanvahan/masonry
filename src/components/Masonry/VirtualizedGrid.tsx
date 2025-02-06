@@ -19,6 +19,23 @@ interface VirtualizedGridProps {
   height: number;
 }
 
+const search = (startAt: number, arr: DataItem[], target: number) => {
+  let low = startAt;
+  let high = arr.length - 1;
+  while (low <= high) {
+    const mid = Math.floor((low + high) / 2);
+    if (arr[mid].y === target) {
+      return mid;
+    }
+    if (arr[mid].y < target) {
+      low = mid + 1;
+    } else {
+      high = mid - 1;
+    }
+  }
+  return low;
+};
+
 const StyledGrid = styled.div<{ height: number }>`
   display: flex;
   gap: 16px;
@@ -26,6 +43,10 @@ const StyledGrid = styled.div<{ height: number }>`
   height: ${(props) => props.height + "px"};
   & > div {
     flex: 1;
+  }
+
+  .col {
+    position: relative;
   }
 `;
 export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
@@ -46,25 +67,28 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
         let deltaBottom = 0;
 
         if (dir === "top") {
-          deltaTop = 2000;
-          deltaBottom = 1000;
-        } else if (dir === "bottom") {
-          deltaTop = 1000;
+          deltaTop = 4000;
           deltaBottom = 2000;
+        } else if (dir === "bottom") {
+          deltaTop = 2000;
+          deltaBottom = 4000;
         } else if (dir === "mid") {
-          deltaTop = 1000;
-          deltaBottom = 1000;
+          deltaTop = 4000;
+          deltaBottom = 4000;
         }
 
-        //this could be optimized by taking in count that the elements y position by which we filter them is sorted
-        const result = data.map((row) =>
-          row.filter(
-            (item) =>
-              item.y > container.scrollTop - deltaTop &&
-              item.y <
-                container.scrollTop + container.clientHeight + deltaBottom
-          )
-        );
+        const result = data.map((col) => {
+          const startIdx = search(0, col, container.scrollTop - deltaTop);
+
+          const endIdx = search(
+            startIdx,
+            col,
+            container.scrollTop + container.clientHeight + deltaBottom
+          );
+
+          return col.slice(startIdx, endIdx + 1);
+        });
+
         setVirtualizedData(result);
       },
       [container, data]
@@ -79,7 +103,6 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
       if (!container) {
         return;
       }
-
       let lastScrollPos = 0;
 
       const onScroll = () => {
@@ -88,7 +111,7 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
         lastScrollPos = container.scrollTop;
         const scrollDiffDelayed =
           container.scrollTop - lastScrollPosDelayed.current;
-        if (Math.abs(scrollDiffDelayed) < 20) {
+        if (Math.abs(scrollDiffDelayed) < 1000) {
           return;
         }
         lastScrollPosDelayed.current = container.scrollTop;
@@ -102,10 +125,11 @@ export const VirtualizedGrid: React.FC<VirtualizedGridProps> = React.memo(
         container.removeEventListener("scroll", onScroll);
       };
     }, [container, updateVirtualizedData]);
+
     return (
       <StyledGrid height={height}>
         {virtualizedData.map((photos, i) => (
-          <div key={data[i]?.[0]?.id ?? i} className="row">
+          <div key={data[i]?.[0]?.id ?? i} className="col">
             {photos.map((photo) => (
               <MasonryItem photo={photo} key={photo.key} />
             ))}

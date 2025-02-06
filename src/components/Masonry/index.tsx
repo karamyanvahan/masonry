@@ -24,10 +24,6 @@ const StyledMasonryContainer = styled.div<{
     padding-top: 10px;
     height: 100px;
   }
-
-  .row {
-    position: relative;
-  }
 `;
 
 export const Masonry: React.FC<{
